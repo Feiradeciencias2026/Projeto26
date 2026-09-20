@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoramento da Qualidade da Água - Projeto Química</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        deepblue: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            300: '#5eead4',
+                            500: '#14b8a6',
+                            700: '#0f766e',
+                            800: '#1e40af', 
+                            900: '#1e3a8a', 
+                            950: '#0a192f',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                        heading: ['Nunito', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Animações de Entrada */
+        .fade-in-up {
+            opacity: 1;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Gradiente Animado (Água) */
+        @keyframes shimmerBlue {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animated-water-text {
+            background: linear-gradient(270deg, #60a5fa, #38bdf8, #2dd4bf, #818cf8, #60a5fa);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmerBlue 5s ease infinite;
+        }
+
+        /* Elementos Flutuantes da Capa e Corpo */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(4deg); }
+        }
+        .animate-float {
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+        @keyframes floatSlowReverse {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(15px) rotate(-4deg); }
+        }
+        .animate-float-rev {
+            animation: floatSlowReverse 7s ease-in-out infinite;
+        }
+
+        /* Animação de Bolhas */
+        .bubbles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+
+        }
+                .bubble {
+            position: absolute;
+            bottom: -10px;
+            width: 25px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 50%;
+            animation: floatBubble 10s infinite ease-in;
+        
+        }
+
+        @keyframes floatBubble {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+
+        }
+
+        .bubble:nth-child(1)  { left: 3%;  width: 25px; height: 25px; animation-duration: 8s;  animation-delay: 0s; }
+        .bubble:nth-child(2)  { left: 8%;  width: 12px; height: 12px; animation-duration: 6s;  animation-delay: 2s; }
+        .bubble:nth-child(3)  { left: 13%; width: 30px; height: 30px; animation-duration: 10s; animation-delay: 1s; }
+        .bubble:nth-child(4)  { left: 18%; width: 18px; height: 18px; animation-duration: 7s;  animation-delay: 3s; }
+        .bubble:nth-child(5)  { left: 24%; width: 35px; height: 35px; animation-duration: 11s; animation-delay: 0.5s; }
+        .bubble:nth-child(6)  { left: 29%; width: 15px; height: 15px; animation-duration: 5s;  animation-delay: 2.5s; }
+        .bubble:nth-child(7)  { left: 35%; width: 28px; height: 28px; animation-duration: 9s;  animation-delay: 1.2s; }
+        .bubble:nth-child(8)  { left: 41%; width: 22px; height: 22px; animation-duration: 8s;  animation-delay: 4.1s; }
+        .bubble:nth-child(9)  { left: 47%; width: 40px; height: 40px; animation-duration: 12s; animation-delay: 0.8s; }
+        .bubble:nth-child(10) { left: 53%; width: 16px; height: 16px; animation-duration: 6.5s; animation-delay: 3.2s; }
+        .bubble:nth-child(11) { left: 59%; width: 32px; height: 32px; animation-duration: 10.5s; animation-delay: 1.8s; }
+        .bubble:nth-child(12) { left: 65%; width: 20px; height: 20px; animation-duration: 7.5s; animation-delay: 2.2s; }
+        .bubble:nth-child(13) { left: 71%; width: 38px; height: 38px; animation-duration: 9.5s; animation-delay: 0.3s; }
+        .bubble:nth-child(14) { left: 76%; width: 14px; height: 14px; animation-duration: 5.5s; animation-delay: 4.5s; }
+        .bubble:nth-child(15) { left: 82%; width: 26px; height: 26px; animation-duration: 8.5s; animation-delay: 1.5s; }
+        .bubble:nth-child(16) { left: 87%; width: 42px; height: 42px; animation-duration: 13s; animation-delay: 3.8s; }
+        .bubble:nth-child(17) { left: 92%; width: 21px; height: 21px; animation-duration: 7.2s; animation-delay: 2.1s; }
+        .bubble:nth-child(18) { left: 96%; width: 25px; height: 25px; animation-duration: 9.8s; animation-delay: 0.1s; }
+        .bubble:nth-child(19) { left: 45%; width: 19px; height: 19px; animation-duration: 6.8s; animation-delay: 3.6s; }
+        .bubble:nth-child(20) { left: 68%; width: 24px; height: 24px; animation-duration: 8.2s; animation-delay: 1.9s; }
+
+        /* Cartões da Equipe */
+        .equipe-card {
+            perspective: 1000px;
+        }
+        .equipe-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .equipe-card:hover .equipe-inner {
+            transform: rotateY(180deg);
+        }
+        .equipe-front, .equipe-back {
+            backface-visibility: hidden;
+            border-radius: 1rem;
+        }
+        .equipe-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(145deg, #1e3a8a, #172554);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.25rem;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        /* Tela do Simulador */
+        .digital-screen {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #a3e635; 
+            color: #064e3b;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.3);
+        }
+
+        /* Pulso suave para o diário */
+        .pulse-dot {
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }  
+
+    </style>
+</head>
+<body class="bg-blue-50 text-gray-700 font-sans antialiased overflow-x-hidden text-[13px]">
+
+        <!-- Navbar -->
+    <nav class="fixed w-full z-50 bg-deepblue-950/90 backdrop-blur-lg text-white shadow-lg border-b border-white/10 transition-all">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2 cursor-pointer group" onclick="window.scrollTo(0,0)">
+                <i class="fa-solid fa-droplet text-blue-400 group-hover:scale-110 group-hover:text-teal-300 transition-all duration-300"></i>
+                <span class="font-heading font-extrabold text-base tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-100 to-blue-400">ÁguaLimpa</span>
+            </div>
+            
+            <!-- Botão do Menu Hambúrguer (3 Traços) -->
+            <button onclick="toggleMenu()" class="text-white text-xl bg-white/10 hover:bg-white/20 w-10 h-10 rounded-full flex items-center justify-center transition-colors focus:outline-none">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Header / Capa Marcante com Efeitos -->
+    <header class="relative bg-deepblue-950 text-white pt-40 pb-40 px-6 flex flex-col items-center justify-center text-center overflow-hidden min-h-screen">
+        <!-- Bolhas Animadas -->
+        <div class="bubbles">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+</div>
+
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-blue-700/20 blur-[150px] rounded-full pointer-events-none"></div>
+
+        <!-- Elementos flutuantes animados -->
+        <div class="absolute top-28 left-10 md:left-24 text-blue-400/20 text-5xl md:text-7xl animate-float pointer-events-none">
+            <i class="fa-solid fa-droplet"></i>
+        </div>
+        <div class="absolute bottom-40 left-16 md:left-36 text-teal-400/20 text-4xl md:text-6xl animate-float-rev pointer-events-none">
+            <i class="fa-solid fa-microchip"></i>
+        </div>
+        <div class="absolute top-36 right-12 md:right-28 text-cyan-400/20 text-5xl md:text-7xl animate-float-rev pointer-events-none">
+            <i class="fa-solid fa-water"></i>
+        </div>
+        <div class="absolute bottom-44 right-16 md:right-40 text-blue-300/20 text-4xl md:text-6xl animate-float pointer-events-none">
+            <i class="fa-solid fa-flask"></i>
+        </div>
+
+        <div class="max-w-5xl z-10 fade-in-up mt-10">
+            <!-- Pílulas Temáticas -->
+
+            <div class="flex flex-wrap justify-center gap-3 mb-8">
+    <button onclick="togglePill(this)" class="bg-blue-900/60 border border-blue-700/50 px-5 py-2 rounded-full text-[11px] font-semibold text-blue-200 flex items-center gap-2 backdrop-blur-sm shadow-lg transition-all duration-300 transform cursor-pointer">
+        <i class="fa-solid fa-microchip text-teal-300"></i> Arduino Nano & Sensores
+    </button>
+    <button onclick="togglePill(this)" class="bg-blue-900/60 border border-blue-700/50 px-5 py-2 rounded-full text-[11px] font-semibold text-blue-200 flex items-center gap-2 backdrop-blur-sm shadow-lg transition-all duration-300 transform cursor-pointer">
+        <i class="fa-solid fa-droplet text-blue-400"></i> Análise de Poços Rurais
+    </button>
+    <button onclick="togglePill(this)" class="bg-blue-900/60 border border-blue-700/50 px-5 py-2 rounded-full text-[11px] font-semibold text-blue-200 flex items-center gap-2 backdrop-blur-sm shadow-lg transition-all duration-300 transform cursor-pointer">
+        <i class="fa-solid fa-seedling text-emerald-400"></i> ODS 6 • Sustentabilidade
+    </button>
+</div>
+
+            <!-- Título com Gradiente Animado -->
+            <h1 class="font-heading text-3xl md:text-5xl lg:text-7xl font-black mb-6 leading-tight tracking-tight drop-shadow-2xl">
+                Monitoramento da <br>
+                <span class="animated-water-text drop-shadow-xl">QUALIDADE DA ÁGUA</span>
+            </h1>
+            
+            <p class="text-xs md:text-sm text-blue-100/90 mb-12 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-md">
+                Desenvolvimento de um sensor eletrônico portátil de baixo custo baseado em Arduino para proteger e analisar recursos hídricos em comunidades escolares e rurais.
+            </p>
+            
+                        <div class="flex flex-wrap justify-center gap-5">
+<a href="#problema" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 px-8 rounded-full shadow-[0_0_30px_rgba(37,99,235,0.8)] hover:shadow-[0_0_40px_rgba(59,130,246,1)] hover:-translate-y-1 transition-all duration-300 text-[11px] tracking-widest uppercase border border-blue-300/60 animate-pulse">
+    Explorar Projeto
+</a>
+
+                      </div>
+        </div>
+    </header>
+
+    <!-- O Problema -->
+    <section id="problema" class="py-28 px-6 bg-white relative overflow-hidden">
+        <!-- Elementos Flutuantes de Fundo -->
+        <div class="absolute top-20 left-[5%] text-blue-300/15 text-7xl animate-float pointer-events-none"><i class="fa-solid fa-droplet"></i></div>
+        <div class="absolute bottom-10 right-[8%] text-teal-300/15 text-8xl animate-float-rev pointer-events-none"><i class="fa-solid fa-flask"></i></div>
+
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="fade-in-up">
+                    <h2 class="font-heading text-xl md:text-2xl font-extrabold text-deepblue-950 mb-4">Justificativa</h2>
+                    <div class="w-16 h-1.5 bg-blue-500 rounded-full mb-8"></div>
+                    
+                    <p class="text-gray-700 mb-5 leading-relaxed text-xs md:text-sm text-justify font-medium">
+                        Todos os integrantes do nosso grupo moram em áreas rurais de Sátiro Dias, onde o abastecimento é feito principalmente por <strong>poços semi-artesianos, reservatórios e tanques</strong>. Em diversos momentos, percebemos que a qualidade dessa água parecia duvidosa.
+                    </p>
+                    <p class="text-gray-700 mb-8 leading-relaxed text-xs md:text-sm text-justify font-medium">
+                        Segundo estudos da USP, cerca de <strong>90% dos poços semi-artesianos não possuem autorização</strong> dos órgãos competentes. Como consequência, eles não passam por fiscalização adequada nem por análises laboratoriais que confirmem a potabilidade.
+                    </p>
+
+                    <div class="bg-gradient-to-br from-blue-50 to-teal-50 p-6 rounded-3xl border border-blue-100 shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+                        <h4 class="font-heading font-bold text-deepblue-900 mb-3 flex items-center gap-2 text-xs md:text-sm">
+                            <i class="fa-solid fa-bullseye text-blue-600 text-base"></i> Nossa Solução e o ODS 6
+                        </h4>
+                        <p class="text-gray-700 text-[11px] md:text-xs leading-relaxed font-medium">
+                            Desenvolvemos um <strong>sensor eletrônico de baixo custo</strong> utilizando Arduino. O projeto traz monitoramento acessível para comunidades que já dependem dessas fontes, alinhando-se estritamente ao <strong>ODS 6 da ONU (Água Potável e Saneamento)</strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-5 fade-in-up">
+                    <div class="bg-white p-5 rounded-2xl shadow-md border border-gray-100 flex items-start gap-5 hover:border-blue-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-default group">
+                        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 text-lg flex-shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-temperature-half"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-deepblue-900 text-xs md:text-sm mb-1 group-hover:text-blue-600 transition-colors">Temperatura (°C)</h3>
+                            <p class="text-[11px] text-gray-600 font-medium leading-relaxed">Influencia diretamente processos biológicos, reações químicas e a solubilidade de gases na água.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl shadow-md border border-gray-100 flex items-start gap-5 hover:border-teal-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-default group">
+                        <div class="w-12 h-12 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-600 text-lg flex-shrink-0 group-hover:bg-teal-500 group-hover:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-glass-water"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-deepblue-900 text-xs md:text-sm mb-1 group-hover:text-teal-600 transition-colors">Turbidez (NTU)</h3>
+                            <p class="text-[11px] text-gray-600 font-medium leading-relaxed">Mede o grau de transparência e a quantidade de partículas suspensas na amostra hídrica.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl shadow-md border border-gray-100 flex items-start gap-5 hover:border-blue-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-default group">
+                        <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 text-lg flex-shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-deepblue-900 text-xs md:text-sm mb-1 group-hover:text-blue-600 transition-colors">Condutividade (µS/cm)</h3>
+                            <p class="text-[11px] text-gray-600 font-medium leading-relaxed">Avalia a concentração de íons e sais minerais dissolvidos na água.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simulador Interativo -->
+    <section id="simulador" class="py-28 px-6 bg-deepblue-950 text-white relative overflow-hidden">
+        <!-- Bolhas no simulador -->
+        <div class="bubbles">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+</div>
+
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="text-center mb-12 fade-in-up">
+                <span class="text-teal-400 font-bold tracking-[0.2em] text-[10px] uppercase bg-teal-400/10 py-2 px-5 rounded-full border border-teal-400/20 inline-block mb-4 shadow-[0_0_15px_rgba(45,212,191,0.2)]"><i class="fa-solid fa-microchip mr-2"></i>Laboratório Digital</span>
+                <h2 class="font-heading text-xl md:text-3xl font-extrabold mb-4">Simulador do Sensor</h2>
+                <p class="text-blue-200/90 max-w-xl mx-auto text-xs font-medium">
+                    Selecione uma amostra hídrica para simular a leitura simultânea dos sensores no painel LCD do Arduino, exatamente como no projeto real.
+                </p>
+            </div>
+
+            <div class="bg-deepblue-900/60 backdrop-blur-xl border border-blue-700/50 p-8 md:p-10 rounded-3xl shadow-2xl flex flex-col lg:flex-row gap-10 fade-in-up transform transition-all hover:shadow-[0_0_40px_rgba(30,58,138,0.5)]">
+                <div class="w-full lg:w-1/3 flex flex-col gap-3 justify-center">
+                    <p class="font-bold text-blue-300 mb-2 text-center lg:text-left text-[11px] tracking-widest uppercase">Selecione a Amostra:</p>
+                    
+                    <button onclick="simular('torneira')" class="flex items-center justify-between bg-white/5 border border-white/10 text-white px-4 py-3 rounded-xl font-semibold hover:bg-blue-600/40 hover:-translate-y-0.5 hover:shadow-lg transition-all text-xs group">
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-faucet-drip text-blue-400 group-hover:scale-110 transition-transform"></i> Água da Torneira</span>
+                        <i class="fa-solid fa-chevron-right text-[9px] opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </button>
+                    
+                    <button onclick="simular('poco')" class="flex items-center justify-between bg-white/5 border border-white/10 text-white px-4 py-3 rounded-xl font-semibold hover:bg-blue-600/40 hover:-translate-y-0.5 hover:shadow-lg transition-all text-xs group">
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-bucket text-blue-400 group-hover:scale-110 transition-transform"></i> Água de Poço</span>
+                        <i class="fa-solid fa-chevron-right text-[9px] opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </button>
+                    
+                    <button onclick="simular('rio')" class="flex items-center justify-between bg-white/5 border border-white/10 text-white px-4 py-3 rounded-xl font-semibold hover:bg-blue-600/40 hover:-translate-y-0.5 hover:shadow-lg transition-all text-xs group">
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-water text-blue-400 group-hover:scale-110 transition-transform"></i> Água de Rio</span>
+                        <i class="fa-solid fa-chevron-right text-[9px] opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </button>
+
+                    <button onclick="simular('chuva')" class="flex items-center justify-between bg-white/5 border border-white/10 text-white px-4 py-3 rounded-xl font-semibold hover:bg-blue-600/40 hover:-translate-y-0.5 hover:shadow-lg transition-all text-xs group">
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-cloud-showers-water text-blue-400 group-hover:scale-110 transition-transform"></i> Água da Chuva</span>
+                        <i class="fa-solid fa-chevron-right text-[9px] opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </button>
+
+                    <button onclick="simular('mineral')" class="flex items-center justify-between bg-white/5 border border-white/10 text-white px-4 py-3 rounded-xl font-semibold hover:bg-blue-600/40 hover:-translate-y-0.5 hover:shadow-lg transition-all text-xs group">
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-bottle-water text-blue-400 group-hover:scale-110 transition-transform"></i> Água Mineral</span>
+                        <i class="fa-solid fa-chevron-right text-[9px] opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </button>
+
+                    <button onclick="simular('reset')" class="mt-3 text-blue-400/80 hover:text-white text-[10px] font-bold transition-colors text-center uppercase tracking-widest flex items-center justify-center gap-2 hover:scale-105">
+                        <i class="fa-solid fa-rotate-right"></i> Resetar Leitura
+                    </button>
+                </div>
+
+                <div class="w-full lg:w-2/3 bg-black p-6 rounded-3xl border-4 border-gray-800 relative shadow-[inset_0_0_30px_rgba(0,0,0,0.8)] flex flex-col justify-center">
+                    <div class="absolute top-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+                        <div class="w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]" id="led-status"></div>
+                    </div>
+                    
+                    <div class="digital-screen w-full min-h-[280px] rounded-2xl p-6 flex flex-col justify-center items-center text-center relative overflow-hidden text-xs">
+                        <h3 id="sim-title" class="text-[11px] font-extrabold mb-6 tracking-wider uppercase border-b-2 border-green-800/40 pb-3 w-full opacity-90">
+                            Aguardando Amostra...
+                        </h3>
+                        
+                        <div class="grid grid-cols-3 gap-4 w-full mb-6">
+                            <div class="flex flex-col items-center group">
+                                <span class="text-[9px] uppercase font-extrabold opacity-80 tracking-widest mb-1.5">Temp.</span>
+                                <span id="sim-temp" class="text-3xl md:text-4xl font-bold tracking-tight">--</span>
+                                <span class="text-[9px] font-bold opacity-70 mt-1">°C</span>
+                            </div>
+                            <div class="flex flex-col items-center border-l-2 border-r-2 border-green-800/40 px-3 group">
+                                <span class="text-[9px] uppercase font-extrabold opacity-80 tracking-widest mb-1.5">Turbidez</span>
+                                <span id="sim-turb" class="text-3xl md:text-4xl font-bold tracking-tight">--</span>
+                                <span class="text-[9px] font-bold opacity-70 mt-1">NTU</span>
+                            </div>
+                            <div class="flex flex-col items-center group">
+                                <span class="text-[9px] uppercase font-extrabold opacity-80 tracking-widest mb-1.5">Condut.</span>
+                                <span id="sim-cond" class="text-3xl md:text-4xl font-bold tracking-tight">--</span>
+                                <span class="text-[9px] font-bold opacity-70 mt-1">µS/cm</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Caixa de Diagnóstico Super Nítida e Legível -->
+                        <div id="sim-desc-container" class="w-full mt-2 py-3 px-4 rounded-xl border-[3px] bg-slate-950 border-green-500 shadow-[0_0_20px_rgba(34,197,94,0.4)] transition-all duration-300">
+                            <p id="sim-desc" class="text-xs md:text-sm font-black uppercase tracking-wider text-green-300">
+                                Pronto para iniciar leitura dos sensores.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <!-- Metodologia -->
+    <section id="metodologia" class="py-28 px-6 bg-blue-50 relative overflow-hidden">
+        <!-- Elementos Flutuantes de Fundo -->
+        <div class="absolute top-1/4 right-[5%] text-indigo-300/15 text-8xl animate-float pointer-events-none"><i class="fa-solid fa-gears"></i></div>
+        <div class="absolute bottom-1/4 left-[8%] text-blue-300/15 text-7xl animate-float-rev pointer-events-none"><i class="fa-solid fa-clipboard-check"></i></div>
+
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-16 fade-in-up">
+                <h2 class="font-heading text-xl md:text-2xl font-extrabold text-deepblue-950 mb-4">Metodologia Científica</h2>
+                <p class="text-gray-600 max-w-lg mx-auto text-xs font-medium">Estruturado em 6 etapas fundamentais para garantir total rigor técnico e experimental no desenvolvimento do protótipo.</p>
+                <div class="w-16 h-1.5 bg-blue-500 mx-auto rounded-full mt-6"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white p-6 rounded-3xl shadow-md border border-blue-100 hover:shadow-2xl hover:border-blue-300 transition-all duration-300 transform hover:-translate-y-2 fade-in-up relative overflow-hidden group">
+                    <span class="absolute right-4 top-4 text-4xl font-bold group-hover:font-black text-blue-50 group-hover:text-blue-100 group-hover:scale-110 transition-all duration-300 z-0 opacity-20 group-hover:opacity-40">1</span>
+                    <div class="relative z-10">
+                        <h3 class="font-heading font-extrabold text-sm md:text-base text-deepblue-900 mb-2">Pesquisa Bibliográfica</h3>
+                        <p class="text-gray-600 text-[11px] md:text-xs font-medium leading-relaxed">Levantamento de normas do Ministério da Saúde, literatura sobre qualidade hídrica e artigos científicos sobre o funcionamento de sensores ambientais.</p>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white p-6 rounded-3xl shadow-md border border-blue-100 hover:shadow-2xl hover:border-blue-300 transition-all duration-300 transform hover:-translate-y-2 fade-in-up relative overflow-hidden group" style="transition-delay: 50ms;">
+                    <span class="absolute right-4 top-4 text-4xl font-bold group-hover:font-black text-blue-50 group-hover:text-blue-100 group-hover:scale-110 transition-all duration-300 z-0 opacity-20 group-hover:opacity-40">2</span>
+                    <div class="relative z-10">
+                        <h3 class="font-heading font-extrabold text-sm md:text-base text-deepblue-900 mb-2">Construção do Protótipo</h3>
+                        <p class="text-gray-600 text-[11px] md:text-xs font-medium leading-relaxed">Montagem física cuidadosa unindo o Arduino Nano, protoboard, Display LCD e a fiação (jumpers) dos três módulos principais de análise.</p>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white p-6 rounded-3xl shadow-md border border-blue-100 hover:shadow-2xl hover:border-blue-300 transition-all duration-300 transform hover:-translate-y-2 fade-in-up relative overflow-hidden group" style="transition-delay: 100ms;">
+                    <span class="absolute right-4 top-4 text-4xl font-bold group-hover:font-black text-blue-50 group-hover:text-blue-100 group-hover:scale-110 transition-all duration-300 z-0 opacity-20 group-hover:opacity-40">3</span>
+                    <div class="relative z-10">
+                        <h3 class="font-heading font-extrabold text-sm md:text-base text-deepblue-900 mb-2">Programação em C++</h3>
+                        <p class="text-gray-600 text-[11px] md:text-xs font-medium leading-relaxed">Desenvolvimento minucioso do código na Arduino IDE para calibrar, processar os dados analógicos brutos e exibi-los no visor alfanumérico.</p>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="bg-white p-6 rounded-3xl shadow-md border border-blue-100 hover:shadow-2xl hover:border-blue-300 transition-all duration-300 transform hover:-translate-y-2 fade-in-up relative overflow-hidden group" style="transition-delay: 150ms;">
+                    <span class="absolute right-4 top-4 text-4xl font-bold group-hover:font-black text-blue-50 group-hover:text-blue-100 group-hover:scale-110 transition-all duration-300 z-0 opacity-20 group-hover:opacity-40">4</span>
+                    <div class="relative z-10">
+                        <h3 class="font-heading font-extrabold text-sm md:text-base text-deepblue-900 mb-2">Coleta de Dados</h3>
+                        <p class="text-gray-600 text-[11px] md:text-xs font-medium leading-relaxed">Testes práticos realizados em ambiente real com amostras coletadas de torneiras, poços locais, rios da região e águas engarrafadas.</p>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="bg-white p-6 rounded-3xl shadow-md border border-blue-100 hover:shadow-2xl hover:border-blue-300 transition-all duration-300 transform hover:-translate-y-2 fade-in-up relative overflow-hidden group" style="transition-delay: 200ms;">
+                    <span class="absolute right-4 top-4 text-4xl font-bold group-hover:font-black text-blue-50 group-hover:text-blue-100 group-hover:scale-110 transition-all duration-300 z-0 opacity-20 group-hover:opacity-40">5</span>
+                    <div class="relative z-10">
+                        <h3 class="font-heading font-extrabold text-sm md:text-base text-deepblue-900 mb-2">Análise Estatística</h3>
+                        <p class="text-gray-600 text-[11px] md:text-xs font-medium leading-relaxed">Tratamento cruzado dos valores obtidos pelas medições, elaboração de tabelas e geração de gráficos comparativos detalhados.</p>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="bg-white p-6 rounded-3xl shadow-md border border-blue-100 hover:shadow-2xl hover:border-blue-300 transition-all duration-300 transform hover:-translate-y-2 fade-in-up relative overflow-hidden group" style="transition-delay: 250ms;">
+                    <span class="absolute right-4 top-4 text-4xl font-bold group-hover:font-black text-blue-50 group-hover:text-blue-100 group-hover:scale-110 transition-all duration-300 z-0 opacity-20 group-hover:opacity-40">6</span>
+                    <div class="relative z-10">
+                        <h3 class="font-heading font-extrabold text-sm md:text-base text-deepblue-900 mb-2">Divulgação Científica</h3>
+                        <p class="text-gray-600 text-[11px] md:text-xs font-medium leading-relaxed">Produção estruturada de um banner oficial, elaboração do relatório final escrito e formatação da apresentação pública escolar.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    </section>
+
+    <!-- Secção: Dados Experimentais Reais -->
+    <section id="dados" class="py-28 px-6 bg-white relative overflow-hidden">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-16 fade-in-up">
+                <span class="text-teal-600 font-bold tracking-widest text-[10px] uppercase mb-3 block">Resultados de Campo</span>
+                <h2 class="font-heading text-xl md:text-2xl font-extrabold text-deepblue-950 mb-4">Dados Coletados em Sátiro Dias</h2>
+                <p class="text-gray-600 max-w-xl mx-auto text-xs font-medium">Tabela comparativa com as médias obtidas nos testes práticos realizados com o protótipo nas diferentes fontes hídricas locais.</p>
+                <div class="w-16 h-1.5 bg-blue-500 mx-auto rounded-full mt-6"></div>
+            </div>
+
+            <div class="bg-blue-50/60 p-6 md:p-8 rounded-3xl border border-blue-100 shadow-xl overflow-x-auto fade-in-up">
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                        <tr class="border-b border-blue-200 text-deepblue-900 font-heading text-xs uppercase tracking-wider">
+                            <th class="py-4 px-4">Amostra Analisada</th>
+                            <th class="py-4 px-4">Temperatura Média</th>
+                            <th class="py-4 px-4">Turbidez (NTU)</th>
+                            <th class="py-4 px-4">Condutividade (µS/cm)</th>
+                            <th class="py-4 px-4">Diagnóstico Técnico</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 text-xs font-medium divide-y divide-blue-100">
+                        <tr class="hover:bg-blue-100/50 transition-colors">
+                            <td class="py-4 px-4 font-bold text-deepblue-950 flex items-center gap-2"><i class="fa-solid fa-faucet-drip text-blue-500"></i> Água da Torneira</td>
+                            <td class="py-4 px-4">24.5 °C</td>
+                            <td class="py-4 px-4">0.8 NTU</td>
+                            <td class="py-4 px-4">120 µS/cm</td>
+                            <td class="py-4 px-4"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-extrabold">Seguro</span></td>
+                        </tr>
+                        <tr class="hover:bg-blue-100/50 transition-colors">
+                            <td class="py-4 px-4 font-bold text-deepblue-950 flex items-center gap-2"><i class="fa-solid fa-bucket text-blue-500"></i> Poço Semi-Artesiano</td>
+                            <td class="py-4 px-4">21.0 °C</td>
+                            <td class="py-4 px-4">4.5 NTU</td>
+                            <td class="py-4 px-4">650 µS/cm</td>
+                            <td class="py-4 px-4"><span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-[10px] font-extrabold">Atenção(Sais)</span></td>
+                        </tr>
+                        <tr class="hover:bg-blue-100/50 transition-colors">
+                            <td class="py-4 px-4 font-bold text-deepblue-950 flex items-center gap-2"><i class="fa-solid fa-water text-blue-500"></i> Água de Rio Local</td>
+                            <td class="py-4 px-4">26.2 °C</td>
+                            <td class="py-4 px-4">38.0 NTU</td>
+                            <td class="py-4 px-4">180 µS/cm</td>
+                            <td class="py-4 px-4"><span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-[10px] font-extrabold">Imprópria</span></td>
+                        </tr>
+                        <tr class="hover:bg-blue-100/50 transition-colors">
+                            <td class="py-4 px-4 font-bold text-deepblue-950 flex items-center gap-2"><i class="fa-solid fa-cloud-showers-water text-blue-500"></i> Água da Chuva</td>
+                            <td class="py-4 px-4">20.1 °C</td>
+                            <td class="py-4 px-4">1.2 NTU</td>
+                            <td class="py-4 px-4">15 µS/cm</td>
+                            <td class="py-4 px-4"><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-extrabold">Baixo Mineral</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+        <!-- Secção: Recomendações Práticas -->
+    <section id="recomendacoes" class="py-28 px-6 bg-deepblue-950 text-white relative overflow-hidden">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-16 fade-in-up">
+                <span class="text-teal-400 font-bold tracking-widest text-[10px] uppercase mb-3 block">Impacto Social • ODS 6</span>
+                <h2 class="font-heading text-xl md:text-2xl font-extrabold mb-4">Recomendações para a Comunidade Rural</h2>
+                <p class="text-blue-200 max-w-xl mx-auto text-xs font-medium">Orientações simples e acessíveis para o tratamento e purificação da água com base nos diagnósticos do protótipo.</p>
+                <div class="w-16 h-1.5 bg-teal-400 mx-auto rounded-full mt-6"></div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Cartão 1 -->
+                <div class="bg-deepblue-900/60 border border-blue-700/50 p-8 rounded-3xl shadow-xl hover:border-teal-400 hover:shadow-[0_0_30px_rgba(45,212,191,0.3)] transition-all duration-300 transform hover:-translate-y-2 fade-in-up group cursor-default">
+                    <div class="w-12 h-12 bg-teal-400/10 text-teal-300 rounded-2xl flex items-center justify-center text-xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-fire"></i>
+                    </div>
+                    <h3 class="font-heading font-extrabold text-base mb-3 text-white group-hover:text-teal-300 transition-colors">Fervura Adequada</h3>
+                    <p class="text-blue-100/80 text-[11px] leading-relaxed font-medium">
+                        Caso o sensor aponte turbidez leve ou suspeita biológica em poços, ferver a água por pelo menos 3 a 5 minutos elimina microrganismos patogénicos antes do consumo familiar.
+                    </p>
+                </div>
+
+                <!-- Cartão 2 -->
+                <div class="bg-deepblue-900/60 border border-blue-700/50 p-8 rounded-3xl shadow-xl hover:border-teal-400 hover:shadow-[0_0_30px_rgba(45,212,191,0.3)] transition-all duration-300 transform hover:-translate-y-2 fade-in-up group cursor-default" style="transition-delay: 100ms;">
+                    <div class="w-12 h-12 bg-blue-400/10 text-blue-300 rounded-2xl flex items-center justify-center text-xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-filter"></i>
+                    </div>
+                    <h3 class="font-heading font-extrabold text-base mb-3 text-white group-hover:text-teal-300 transition-colors">Filtração Artesanal</h3>
+                    <p class="text-blue-100/80 text-[11px] leading-relaxed font-medium">
+                        Para águas com partículas em suspensão (NTU elevado), a utilização de camadas de areia limpa, brita e carvão ativado reduz drasticamente a turvação antes da desinfeção.
+                    </p>
+                </div>
+
+                <!-- Cartão 3 -->
+                <div class="bg-deepblue-900/60 border border-blue-700/50 p-8 rounded-3xl shadow-xl hover:border-teal-400 hover:shadow-[0_0_30px_rgba(45,212,191,0.3)] transition-all duration-300 transform hover:-translate-y-2 fade-in-up group cursor-default" style="transition-delay: 200ms;">
+                    <div class="w-12 h-12 bg-emerald-400/10 text-emerald-300 rounded-2xl flex items-center justify-center text-xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-flask-vial"></i>
+                    </div>
+                    <h3 class="font-heading font-extrabold text-base mb-3 text-white group-hover:text-teal-300 transition-colors">Uso de Hipoclorito</h3>
+                    <p class="text-blue-100/80 text-[11px] leading-relaxed font-medium">
+                        Adicionar 2 gotas de hipoclorito de sódio a 2,5% por litro de água e aguardar 30 minutos garante a potabilidade segura em reservatórios e caixas d'água rurais.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+     
+    <!-- Custos e Inventário de Hardware -->      
+    <section id="custos" class="py-28 px-4 bg-deepblue-950 relative overflow-hidden">
+        <!-- Efeito de fundo técnico animado -->
+        <div class="absolute inset-0 bg-[linear-gradient(rgba(30,58,138,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(30,58,138,0.05)_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto text-center fade-in-up relative z-10">
+            <span class="text-blue-400 font-bold tracking-widest text-[10px] uppercase mb-3 block drop-shadow-md">Transparência e Blueprint</span>
+            <h2 class="font-heading text-2xl md:text-3xl font-black text-white mb-5 drop-shadow-lg">Inventário de Hardware</h2>
+            <p class="text-blue-200 text-xs mb-16 font-medium max-w-2xl mx-auto leading-relaxed">Visão explodida e detalhamento técnico das especificações, funções e modos de funcionamento de cada componente.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                
+                <!-- 1. Arduino Nano (Formato exato: Estreito, longo, portas USB e pinos duplos) -->
+                <div class="bg-deepblue-900/40 border border-blue-700/50 rounded-3xl p-6 shadow-xl backdrop-blur-sm group hover:border-blue-400 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-300 flex flex-col items-center">
+                    <div class="w-full h-32 mb-6 flex items-center justify-center opacity-90 group-hover:scale-105 transition-all duration-500">
+                        <svg viewBox="0 0 100 100" class="h-full" fill="none">
+                            <rect x="35" y="10" width="30" height="80" rx="2" fill="#1e3a8a" stroke="#60a5fa" stroke-width="2"/>
+                            <rect x="40" y="5" width="20" height="8" rx="1" fill="#94a3b8" stroke="#cbd5e1" stroke-width="1.5"/>
+                            <rect x="42" y="38" width="16" height="16" rx="1" transform="rotate(45 50 46)" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+                            <rect x="44" y="65" width="12" height="12" fill="#0f172a"/>
+                            <circle cx="50" cy="20" r="2" fill="#ef4444"/>
+                            <g fill="#fbbf24" class="group-hover:animate-pulse"/>
+                                <rect x="31" y="15" width="3" height="2"/><rect x="31" y="23" width="3" height="2"/><rect x="31" y="31" width="3" height="2"/><rect x="31" y="39" width="3" height="2"/><rect x="31" y="47" width="3" height="2"/><rect x="31" y="55" width="3" height="2"/><rect x="31" y="63" width="3" height="2"/><rect x="31" y="71" width="3" height="2"/>
+                                <rect x="66" y="15" width="3" height="2"/><rect x="66" y="23" width="3" height="2"/><rect x="66" y="31" width="3" height="2"/><rect x="66" y="39" width="3" height="2"/><rect x="66" y="47" width="3" height="2"/><rect x="66" y="55" width="3" height="2"/><rect x="66" y="63" width="3" height="2"/><rect x="66" y="71" width="3" height="2"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="w-full border-t border-blue-800/50 pt-4">
+                        <h3 class="font-extrabold text-white text-sm md:text-base mb-1">Arduino Nano</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[9px] text-blue-400 font-mono tracking-widest font-bold">MICROCONTROLADOR</span>
+                            <span class="font-black text-teal-300 text-xs">R$ 50,98</span>
+                        </div>
+                        <div class="text-[10px] md:text-[11px] text-blue-100/80 space-y-2 border-t border-blue-800/50 pt-3 font-medium leading-relaxed">
+                            <p><strong class="text-teal-400 uppercase tracking-wider text-[9px]">Função:</strong> Cérebro do projeto. Processa matematicamente os dados dos sensores e envia para o display.</p>
+                            <p><strong class="text-blue-400 uppercase tracking-wider text-[9px]">Como funciona:</strong> Alimentado via USB. Lê flutuações de tensão nas portas analógicas (A0, A1) e executa o código em C++ gravado em sua memória.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Sensor de Turbidez -->
+                <div class="bg-deepblue-900/40 border border-blue-700/50 rounded-3xl p-6 shadow-xl backdrop-blur-sm group hover:border-blue-400 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-300 flex flex-col items-center">
+                    <div class="w-full h-32 mb-6 flex items-center justify-center opacity-90 group-hover:scale-105 transition-all duration-500">
+                        <svg viewBox="0 0 100 100" class="h-full" fill="none">
+                            <rect x="60" y="20" width="30" height="40" rx="3" fill="#1e3a8a" stroke="#60a5fa" stroke-width="2"/>
+                            <circle cx="75" cy="40" r="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+                            <path d="M60 40 H 40" stroke="#0ea5e9" stroke-width="2.5" stroke-linecap="round"/>
+                            <rect x="15" y="25" width="25" height="35" rx="3" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+                            <circle cx="27" cy="42" r="3" fill="#ef4444"/>
+                        </svg>
+                    </div>
+                    <div class="w-full border-t border-blue-800/50 pt-4">
+                        <h3 class="font-extrabold text-white text-sm md:text-base mb-1">Sensor de Turbidez</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[9px] text-blue-400 font-mono tracking-widest font-bold">ÓPTICO / PARTÍCULAS</span>
+                            <span class="font-black text-teal-300 text-xs">R$ 109,00</span>
+                        </div>
+                        <div class="text-[10px] md:text-[11px] text-blue-100/80 space-y-2 border-t border-blue-800/50 pt-3 font-medium leading-relaxed">
+                            <p><strong class="text-teal-400 uppercase tracking-wider text-[9px]">Função:</strong> Medir o nível de transparência da água e identificar partículas sólidas suspensas (NTU).</p>
+                            <p><strong class="text-blue-400 uppercase tracking-wider text-[9px]">Como funciona:</strong> Emite um feixe de luz infravermelha por um LED interno. Conforme a água apresenta partículas, a luz é bloqueada e o receptor fotelétrico converte em sinal analógico proporcional.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Sensor de Temperatura (DS18B20) -->
+                <div class="bg-deepblue-900/40 border border-blue-700/50 rounded-3xl p-6 shadow-xl backdrop-blur-sm group hover:border-blue-400 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-300 flex flex-col items-center">
+                    <div class="w-full h-32 mb-6 flex items-center justify-center opacity-90 group-hover:scale-105 transition-all duration-500">
+                        <svg viewBox="0 0 100 100" class="h-full" fill="none">
+                            <path d="M20 50 Q 45 20, 70 50" stroke="#3b82f6" stroke-width="2" stroke-dasharray="3 3"/>
+                            <rect x="65" y="38" width="28" height="24" rx="12" fill="#cbd5e1" stroke="#64748b" stroke-width="2"/>
+                            <path d="M88 38 v24" stroke="#475569" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <div class="w-full border-t border-blue-800/50 pt-4">
+                        <h3 class="font-extrabold text-white text-sm md:text-base mb-1">Sensor Temp. (DS18B20)</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[9px] text-blue-400 font-mono tracking-widest font-bold">TERMÔMETRO INOX</span>
+                            <span class="font-black text-teal-300 text-xs">R$ 23,03</span>
+                        </div>
+                        <div class="text-[10px] md:text-[11px] text-blue-100/80 space-y-2 border-t border-blue-800/50 pt-3 font-medium leading-relaxed">
+                            <p><strong class="text-teal-400 uppercase tracking-wider text-[9px]">Função:</strong> Coletar a temperatura exata da amostra hídrica de forma imersiva e à prova d'água.</p>
+                            <p><strong class="text-blue-400 uppercase tracking-wider text-[9px]">Como funciona:</strong> Encapsulado em aço inox, utiliza o protocolo digital 1-Wire. Envia leituras térmicas digitais precisas usando apenas um pino de dados do Arduino.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Sensor de Condutividade / TDS -->
+                <div class="bg-deepblue-900/40 border border-blue-700/50 rounded-3xl p-6 shadow-xl backdrop-blur-sm group hover:border-blue-400 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-300 flex flex-col items-center">
+                    <div class="w-full h-32 mb-6 flex items-center justify-center opacity-90 group-hover:scale-105 transition-all duration-500">
+                        <svg viewBox="0 0 100 100" class="h-full" fill="none">
+                            <rect x="15" y="20" width="35" height="45" rx="3" fill="#1e3a8a" stroke="#60a5fa" stroke-width="2"/>
+                            <circle cx="32" cy="42" r="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+                            <path d="M50 42 H 65" stroke="#0ea5e9" stroke-width="2.5"/>
+                            <rect x="65" y="30" width="22" height="24" rx="2" fill="#334155" stroke="#64748b" stroke-width="1.5"/>
+                            <rect x="71" y="54" width="3" height="15" fill="#e2e8f0"/>
+                            <rect x="79" y="54" width="3" height="15" fill="#e2e8f0"/>
+                        </svg>
+                    </div>
+                    <div class="w-full border-t border-blue-800/50 pt-4">
+                        <h3 class="font-extrabold text-white text-sm md:text-base mb-1">Sensor Condutividade</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[9px] text-blue-400 font-mono tracking-widest font-bold">ÍONS / SAIS TDS</span>
+                            <span class="font-black text-teal-300 text-xs">R$ 54,93</span>
+                        </div>
+                        <div class="text-[10px] md:text-[11px] text-blue-100/80 space-y-2 border-t border-blue-800/50 pt-3 font-medium leading-relaxed">
+                            <p><strong class="text-teal-400 uppercase tracking-wider text-[9px]">Função:</strong> Estimar o Total de Sólidos Dissolvidos (TDS) e minerais presentes na água.</p>
+                            <p><strong class="text-blue-400 uppercase tracking-wider text-[9px]">Como funciona:</strong> Aplica uma pequena corrente alternada entre as hastes de prova. Quanto maior a concentração de sais iônicos dissolvidos, menor a resistência elétrica detectada.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Protoboard e Jumpers -->
+                <div class="bg-deepblue-900/40 border border-blue-700/50 rounded-3xl p-6 shadow-xl backdrop-blur-sm group hover:border-blue-400 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-300 flex flex-col items-center">
+                    <div class="w-full h-32 mb-6 flex items-center justify-center opacity-90 group-hover:scale-105 transition-all duration-500">
+                        <svg viewBox="0 0 100 100" class="h-full" fill="none">
+    <!-- Base da Protoboard Branca -->
+    <rect x="20" y="22" width="60" height="56" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+    
+    <!-- Canal central da protoboard -->
+    <rect x="20" y="48" width="60" height="4" fill="#f1f5f9"/>
+    
+    <!-- Furos simulados (grelha) -->
+    <circle cx="28" cy="30" r="1" fill="#cbd5e1"/><circle cx="36" cy="30" r="1" fill="#cbd5e1"/><circle cx="44" cy="30" r="1" fill="#cbd5e1"/><circle cx="52" cy="30" r="1" fill="#cbd5e1"/><circle cx="60" cy="30" r="1" fill="#cbd5e1"/><circle cx="68" cy="30" r="1" fill="#cbd5e1"/><circle cx="76" cy="30" r="1" fill="#cbd5e1"/>
+    <circle cx="28" cy="38" r="1" fill="#cbd5e1"/><circle cx="36" cy="38" r="1" fill="#cbd5e1"/><circle cx="44" cy="38" r="1" fill="#cbd5e1"/><circle cx="52" cy="38" r="1" fill="#cbd5e1"/><circle cx="60" cy="38" r="1" fill="#cbd5e1"/><circle cx="68" cy="38" r="1" fill="#cbd5e1"/><circle cx="76" cy="38" r="1" fill="#cbd5e1"/>
+    
+    <circle cx="28" cy="62" r="1" fill="#cbd5e1"/><circle cx="36" cy="62" r="1" fill="#cbd5e1"/><circle cx="44" cy="62" r="1" fill="#cbd5e1"/><circle cx="52" cy="62" r="1" fill="#cbd5e1"/><circle cx="60" cy="62" r="1" fill="#cbd5e1"/><circle cx="68" cy="62" r="1" fill="#cbd5e1"/><circle cx="76" cy="62" r="1" fill="#cbd5e1"/>
+    <circle cx="28" cy="70" r="1" fill="#cbd5e1"/><circle cx="36" cy="70" r="1" fill="#cbd5e1"/><circle cx="44" cy="70" r="1" fill="#cbd5e1"/><circle cx="52" cy="70" r="1" fill="#cbd5e1"/><circle cx="60" cy="70" r="1" fill="#cbd5e1"/><circle cx="68" cy="70" r="1" fill="#cbd5e1"/><circle cx="76" cy="70" r="1" fill="#cbd5e1"/>
+    
+    <!-- Jumpers Realistas (Fios curvados) -->
+    <path d="M36 30 C 36 10, 64 10, 64 30" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M44 70 C 44 86, 56 86, 56 70" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+
+                    </div>
+                    <div class="w-full border-t border-blue-800/50 pt-4">
+                        <h3 class="font-extrabold text-white text-sm md:text-base mb-1">Protoboard e Jumpers</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[9px] text-blue-400 font-mono tracking-widest font-bold">CONEXÕES FÍSICAS</span>
+                            <span class="font-black text-teal-300 text-xs">R$ 19,98</span>
+                        </div>
+                        <div class="text-[10px] md:text-[11px] text-blue-100/80 space-y-2 border-t border-blue-800/50 pt-3 font-medium leading-relaxed">
+                            <p><strong class="text-teal-400 uppercase tracking-wider text-[9px]">Função:</strong> Estruturar o circuito elétrico e interligar os módulos eletrônicos sem necessidade de solda.</p>
+                            <p><strong class="text-blue-400 uppercase tracking-wider text-[9px]">Como funciona:</strong> Placa com trilhas metálicas internas interligadas em linhas. Os cabos jumpers conectam eletricamente a alimentação de 5V e os pinos de sinal.</p>
+                        </div>
+                    </div>
+                </div>
+
+                          <!-- 6. Caixa de Proteção -->
+                <div class="card-caixa bg-deepblue-900/40 border border-blue-700/50 rounded-3xl p-6 shadow-xl backdrop-blur-sm group hover:border-blue-400 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-300 flex flex-col items-center cursor-pointer" onclick="this.classList.toggle('aberta')">
+                    <div class="w-full h-32 mb-6 flex items-center justify-center opacity-60 group-hover:scale-105 transition-all duration-500">
+                        <svg viewBox="0 0 100 100" class="h-full" fill="none">
+                            <g class="lid-box" style="transition: transform 0.4s ease; transform-origin: 25px 50px;">
+                                <polygon points="25,25 75,25 85,50 35,50" fill="#334155" stroke="#94a3b8" stroke-width="1.5"/>
+                            </g>
+                            <polygon points="15,50 65,50 65,75 15,75" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>
+                            <polygon points="65,50 85,50 85,75 65,75" fill="#0f172a" stroke="#475569" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <div class="w-full border-t border-blue-800/50 pt-4">
+                        <h3 class="font-extrabold text-white text-sm md:text-base mb-1">Caixa de Proteção</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[9px] text-blue-400 font-mono tracking-widest font-bold">ISOLAMENTO FÍSICO</span>
+                            <span class="font-black text-teal-300 text-xs">R$ 29,13</span>
+                        </div>
+                        <div class="text-[10px] md:text-[11px] text-blue-100/80 space-y-2 border-t border-blue-800/50 pt-3 font-medium leading-relaxed">
+                            <p><strong class="text-teal-400 uppercase tracking-wider text-[9px]">Função:</strong> Acondicionar o circuito eletrônico contra intempéries, umidade e respingos externos.</p>
+                            <p><strong class="text-blue-400 uppercase tracking-wider text-[9px]">Como funciona:</strong> Caixa estanque em ABS isolante que abriga a placa central, permitindo que apenas os cabos blindados dos sensores externos passem por prensa-cabos vedados.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Kit LED -->
+                <div class="bg-deepblue-900/40 border border-blue-700/50 rounded-3xl p-6 shadow-xl backdrop-blur-sm group hover:border-blue-400 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-300 flex flex-col items-center">
+                    <div class="w-full h-32 mb-6 flex items-center justify-center opacity-90 group-hover:scale-105 transition-all duration-500">
+                        <svg viewBox="0 0 100 100" class="h-full" fill="none">
+    <style>
+        .group:hover .led-green { animation: pulse 1s infinite ease-in-out; animation-delay: 0s; }
+        .group:hover .led-yellow { animation: pulse 1s infinite ease-in-out; animation-delay: 0.33s; }
+        .group:hover .led-red { animation: pulse 1s infinite ease-in-out; animation-delay: 0.66s; }
+    </style>
+    
+    <!-- LED Verde (Esquerda) -->
+    <path class="led-green" d="M22 38 v-10 a8 8 0 0 1 16 0 v10 z" fill="#22c55e" fill-opacity="0.4" stroke="#4ade80" stroke-width="1.5"/>
+    <line x1="28" y1="38" x2="28" y2="60" stroke="#cbd5e1" stroke-width="1.5"/>
+    <line x1="34" y1="38" x2="34" y2="52" stroke="#cbd5e1" stroke-width="1.5"/>
+
+    <!-- LED Amarelo (Centro) -->
+    <path class="led-yellow" d="M42 38 v-10 a8 8 0 0 1 16 0 v10 z" fill="#eab308" fill-opacity="0.4" stroke="#facc15" stroke-width="1.5"/>
+    <line x1="48" y1="38" x2="48" y2="60" stroke="#cbd5e1" stroke-width="1.5"/>
+    <line x1="54" y1="38" x2="54" y2="52" stroke="#cbd5e1" stroke-width="1.5"/>
+
+    <!-- LED Vermelho (Direita) -->
+    <path class="led-red" d="M62 38 v-10 a8 8 0 0 1 16 0 v10 z" fill="#ef4444" fill-opacity="0.4" stroke="#f87171" stroke-width="1.5"/>
+    <line x1="68" y1="38" x2="68" y2="60" stroke="#cbd5e1" stroke-width="1.5"/>
+    <line x1="74" y1="38" x2="74" y2="52" stroke="#cbd5e1" stroke-width="1.5"/>
+</svg>
+
+                    </div>
+                    <div class="w-full border-t border-blue-800/50 pt-4">
+                        <h3 class="font-extrabold text-white text-sm md:text-base mb-1">Kit LED</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[9px] text-blue-400 font-mono tracking-widest font-bold">INDICADOR VISUAL</span>
+                            <span class="font-black text-teal-300 text-xs">R$ 9,00</span>
+                        </div>
+                        <div class="text-[10px] md:text-[11px] text-blue-100/80 space-y-2 border-t border-blue-800/50 pt-3 font-medium leading-relaxed">
+                            <p><strong class="text-teal-400 uppercase tracking-wider text-[9px]">Função:</strong> Fornecer um retorno visual imediato sobre a potabilidade e o status da amostra.</p>
+                            <p><strong class="text-blue-400 uppercase tracking-wider text-[9px]">Como funciona:</strong> Diodos emissores de luz acionados diretamente pelo microcontrolador conforme os limiares de segurança programados em C++.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. Display LCD 16x2 -->
+                <div class="bg-deepblue-900/40 border border-blue-700/50 rounded-3xl p-6 shadow-xl backdrop-blur-sm group hover:border-blue-400 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-300 flex flex-col items-center">
+                    <div class="w-full h-32 mb-6 flex items-center justify-center opacity-90 group-hover:scale-105 transition-all duration-500">
+                        <svg viewBox="0 0 100 100" class="h-full" fill="none">
+                            <rect x="15" y="20" width="70" height="40" rx="3" fill="#0f766e" stroke="#14b8a6" stroke-width="1.5"/>
+                            <rect x="22" y="27" width="56" height="24" rx="2" fill="#a3e635" stroke="#65a30d" stroke-width="1.5"/>
+                            <line x1="28" y1="35" x2="60" y2="35" stroke="#14532d" stroke-width="2"/>
+                            <line x1="28" y1="43" x2="68" y2="43" stroke="#14532d" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="w-full border-t border-blue-800/50 pt-4">
+                        <h3 class="font-extrabold text-white text-sm md:text-base mb-1">Display LCD</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[9px] text-blue-400 font-mono tracking-widest font-bold">TELA ALFANUMÉRICA 16X2</span>
+                            <span class="font-black text-teal-300 text-xs">R$ 34,30</span>
+                        </div>
+                        <div class="text-[10px] md:text-[11px] text-blue-100/80 space-y-2 border-t border-blue-800/50 pt-3 font-medium leading-relaxed">
+                            <p><strong class="text-teal-400 uppercase tracking-wider text-[9px]">Função:</strong> Exibir em tempo real e de forma legível os valores numéricos captados.</p>
+                            <p><strong class="text-blue-400 uppercase tracking-wider text-[9px]">Como funciona:</strong> Tela de cristal líquido retroiluminada que recebe caracteres via barramento digital, mostrando a temperatura, turbidez e condutividade.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. Banner Escolar -->
+                <div class="bg-deepblue-900/40 border border-blue-700/50 rounded-3xl p-6 shadow-xl backdrop-blur-sm group hover:border-blue-400 hover:shadow-[0_0_25px_rgba(59,130,246,0.3)] transition-all duration-300 flex flex-col items-center">
+                    <div class="w-full h-32 mb-6 flex items-center justify-center opacity-90 group-hover:scale-105 transition-all duration-500">
+                        <svg viewBox="0 0 100 100" class="h-full" fill="none">
+    <rect x="30" y="10" width="40" height="80" rx="3" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+    <line x1="38" y1="25" x2="62" y2="25" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="38" y1="35" x2="62" y2="35" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="38" y1="45" x2="54" y2="45" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="38" y1="55" x2="60" y2="55" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="38" y1="65" x2="50" y2="65" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
+
+                    </div>
+                    <div class="w-full border-t border-blue-800/50 pt-4">
+                        <h3 class="font-extrabold text-white text-sm md:text-base mb-1">Impressões e Banner</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[9px] text-blue-400 font-mono tracking-widest font-bold">APRESENTAÇÃO</span>
+                            <span class="font-black text-teal-300 text-xs">R$ 29,75</span>
+                        </div>
+                        <div class="text-[10px] md:text-[11px] text-blue-100/80 space-y-2 border-t border-blue-800/50 pt-3 font-medium leading-relaxed">
+                            <p><strong class="text-teal-400 uppercase tracking-wider text-[9px]">Função:</strong> Divulgar e materializar o referencial teórico e os gráficos para a banca avaliadora.</p>
+                            <p><strong class="text-blue-400 uppercase tracking-wider text-[9px]">Como funciona:</strong> Impressão de alta resolução em lona suportada por display tripé, exibindo o resumo estruturado de todo o projeto científico.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Total -->
+            <div class="mt-16 max-w-lg mx-auto bg-gradient-to-br from-deepblue-900 to-blue-800 p-8 rounded-3xl border border-blue-500 shadow-[0_0_40px_rgba(37,99,235,0.4)] transform hover:scale-105 transition-transform duration-500">
+                <p class="text-blue-300 uppercase tracking-widest font-extrabold text-[10px] mb-3">Investimento Total</p>
+                <div class="text-3xl md:text-4xl font-heading font-black text-white drop-shadow-xl pulse-dot inline-block rounded-full px-4">
+                    R$ 360,10
+                </div>
+                <p class="text-[11px] text-blue-200 opacity-80 mt-5 leading-relaxed font-medium">Valores divididos entre os integrantes do grupo. Protótipo concebido rigorosamente sob a premissa de <strong>acessibilidade financeira escolar</strong>.</p>
+            </div>
+        </div>
+    </section>
+
+        <!-- Secção: Perspetivas Futuras e IoT -->
+    <section id="futuro" class="py-28 px-6 bg-white relative overflow-hidden">
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="text-center mb-16 fade-in-up">
+                <span class="text-indigo-600 font-bold tracking-widest text-[10px] uppercase mb-3 block">Inovação e Escalabilidade</span>
+                <h2 class="font-heading text-xl md:text-2xl font-extrabold text-deepblue-950 mb-4">Perspetivas Futuras (IoT)</h2>
+                <p class="text-gray-600 max-w-xl mx-auto text-xs font-medium">Como pretendemos evoluir o projeto tecnológico nas próximas fases de desenvolvimento escolar.</p>
+                <div class="w-16 h-1.5 bg-indigo-500 mx-auto rounded-full mt-6"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Cartão 1 -->
+                <div class="bg-blue-50/70 p-8 rounded-3xl border border-blue-100 shadow-md hover:shadow-2xl hover:border-indigo-400 transition-all duration-300 transform hover:-translate-y-2 fade-in-up group cursor-default">
+                    <div class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center text-lg mb-6 shadow-md group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-wifi"></i>
+                    </div>
+                    <h3 class="font-heading font-extrabold text-base text-deepblue-900 mb-3 group-hover:text-indigo-600 transition-colors">Integração Wi-Fi (ESP8266)</h3>
+                    <p class="text-gray-700 text-[11px] leading-relaxed font-medium">
+                        Acoplamento de um módulo ESP8266 para permitir que o sensor transmita os dados dos poços rurais diretamente para uma nuvem online ou base de dados comunitária em tempo real.
+                    </p>
+                </div>
+
+                <!-- Cartão 2 -->
+                <div class="bg-blue-50/70 p-8 rounded-3xl border border-blue-100 shadow-md hover:shadow-2xl hover:border-indigo-400 transition-all duration-300 transform hover:-translate-y-2 fade-in-up group cursor-default" style="transition-delay: 100ms;">
+                    <div class="w-12 h-12 bg-teal-600 text-white rounded-2xl flex items-center justify-center text-lg mb-6 shadow-md group-hover:scale-110 transition-transform duration-300">
+                        <i class="fa-solid fa-mobile-screen"></i>
+                    </div>
+                    <h3 class="font-heading font-extrabold text-base text-deepblue-900 mb-3 group-hover:text-teal-600 transition-colors">Aplicação Móvel de Alerta</h3>
+                    <p class="text-gray-700 text-[11px] leading-relaxed font-medium">
+                        Desenvolvimento de uma interface mobile simples para que os moradores da comunidade possam verificar instantaneamente no telemóvel a qualidade da água do poço antes do consumo.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Diário de Bordo Expandido -->
+    <section id="diario" class="py-28 px-6 bg-slate-50 relative overflow-hidden">
+        <!-- Elementos Flutuantes de Fundo -->
+        <div class="absolute top-32 right-[-10px] text-teal-300/15 text-7xl animate-float-rev pointer-events-none"><i class="fa-solid fa-calendar-days"></i></div>
+        <div class="absolute bottom-40 left-[-5px] text-blue-300/15 text-8xl animate-float pointer-events-none"><i class="fa-solid fa-pen"></i></div>
+
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="text-center mb-20 fade-in-up">
+                <span class="text-blue-600 font-bold tracking-widest text-[10px] uppercase mb-3 block drop-shadow-sm">Documentação Oficial</span>
+                <h2 class="font-heading text-xl md:text-2xl font-extrabold text-deepblue-950 mb-4">Diário de Bordo</h2>
+                <p class="text-gray-600 text-xs font-medium max-w-xl mx-auto">Principais marcos do desenvolvimento prático do projeto em Sátiro Dias, Bahia (Julho a Setembro de 2026).</p>
+                <div class="w-16 h-1.5 bg-blue-500 mx-auto rounded-full mt-6"></div>
+            </div>
+
+            <div class="relative border-l-4 border-blue-200 ml-4 md:ml-8 space-y-12">
+                
+                <!-- Etapa 1 -->
+                <div class="ml-8 md:ml-10 fade-in-up relative group">
+                    <div class="absolute -left-[42px] md:-left-[50px] mt-1.5 w-8 h-8 bg-blue-600 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-white text-xs group-hover:scale-125 transition-transform pulse-dot"><i class="fa-solid fa-cart-shopping"></i></div>
+                    <div class="bg-blue-50/70 p-6 md:p-8 rounded-3xl border border-blue-100 shadow-md hover:shadow-xl hover:border-blue-300 transition-all duration-300 transform group-hover:-translate-y-1">
+                        <span class="text-[9px] font-extrabold text-white bg-blue-600 py-1.5 px-4 rounded-full mb-4 inline-block uppercase tracking-widest shadow-sm">09 de Julho de 2026</span>
+                        <h4 class="font-heading font-black text-sm md:text-base text-deepblue-900 mb-2">Escolha do Tema & Aquisição</h4>
+                        <p class="text-gray-700 text-[11px] md:text-xs font-medium leading-relaxed">
+                            Reunião no CETIPES entre Neham, Jusiley e Alêssa. Definição do tema: "Sensor de qualidade da água de baixo custo". Como a professora Ivone informou não haver placas suficientes na escola, o grupo pesquisou o melhor custo-benefício e realizou a compra independente do Arduino Nano pelo Mercado Livre (R$ 50,98 divididos entre os integrantes).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Etapa 2 -->
+                <div class="ml-8 md:ml-10 fade-in-up relative group" style="transition-delay: 50ms;">
+                    <div class="absolute -left-[42px] md:-left-[50px] mt-1.5 w-8 h-8 bg-teal-600 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-white text-xs group-hover:scale-125 transition-transform pulse-dot"><i class="fa-solid fa-plug"></i></div>
+                    <div class="bg-blue-50/70 p-6 md:p-8 rounded-3xl border border-blue-100 shadow-md hover:shadow-xl hover:border-blue-300 transition-all duration-300 transform group-hover:-translate-y-1">
+                        <span class="text-[9px] font-extrabold text-white bg-teal-600 py-1.5 px-4 rounded-full mb-4 inline-block uppercase tracking-widest shadow-sm">10 a 15 de Julho de 2026</span>
+                        <h4 class="font-heading font-black text-sm md:text-base text-deepblue-900 mb-2">Entrega e Primeiro Teste</h4>
+                        <p class="text-gray-700 text-[11px] md:text-xs font-medium leading-relaxed">
+                            A peça foi entregue no dia 10 de julho no Centro de Sátiro Dias. No dia 15 de julho, o grupo realizou o primeiro teste de bancada físico na Residência de Neham (Fazenda Lagoa), conectando o Arduino via cabo USB para validar o acionamento energético e o perfeito funcionamento do microcontrolador.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Etapa 3 -->
+                <div class="ml-8 md:ml-10 fade-in-up relative group" style="transition-delay: 100ms;">
+                    <div class="absolute -left-[42px] md:-left-[50px] mt-1.5 w-8 h-8 bg-blue-500 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-white text-xs group-hover:scale-125 transition-transform pulse-dot"><i class="fa-solid fa-users"></i></div>
+                    <div class="bg-blue-50/70 p-6 md:p-8 rounded-3xl border border-blue-100 shadow-md hover:shadow-xl hover:border-blue-300 transition-all duration-300 transform group-hover:-translate-y-1">
+                        <span class="text-[9px] font-extrabold text-white bg-blue-500 py-1.5 px-4 rounded-full mb-4 inline-block uppercase tracking-widest shadow-sm">Agosto de 2026</span>
+                        <h4 class="font-heading font-black text-sm md:text-base text-deepblue-900 mb-2">Planejamento e Inclusão</h4>
+                        <p class="text-gray-700 text-[11px] md:text-xs font-medium leading-relaxed">
+                            Período de fortes alinhamentos teóricos. A Professora Ivone Santos solicitou e confirmou a inclusão oficial da nova integrante, Ana Beatriz Bela, na equipe (dia 06/08). Ao fim do mês (27/08), o grupo se reuniu para discutir o prazo de apresentação, a gestão dos orçamentos e a chegada pendente do restante das peças do hardware.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Etapa 4 -->
+                <div class="ml-8 md:ml-10 fade-in-up relative group" style="transition-delay: 150ms;">
+                    <div class="absolute -left-[42px] md:-left-[50px] mt-1.5 w-8 h-8 bg-indigo-600 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-white text-xs group-hover:scale-125 transition-transform pulse-dot"><i class="fa-solid fa-microchip"></i></div>
+                    <div class="bg-blue-50/70 p-6 md:p-8 rounded-3xl border border-blue-100 shadow-md hover:shadow-xl hover:border-blue-300 transition-all duration-300 transform group-hover:-translate-y-1">
+                        <span class="text-[9px] font-extrabold text-white bg-indigo-600 py-1.5 px-4 rounded-full mb-4 inline-block uppercase tracking-widest shadow-sm">08 de Setembro de 2026</span>
+                        <h4 class="font-heading font-black text-sm md:text-base text-deepblue-900 mb-2">Montagem e Programação</h4>
+                        <p class="text-gray-700 text-[11px] md:text-xs font-medium leading-relaxed">
+                            Com o recebimento de todos os componentes na sede, o grupo realizou a montagem completa do circuito eletrônico (encaixando Arduino, jumpers e sensores na protoboard). No mesmo dia, foi configurado o código base em linguagem C++ (Arduino IDE) para que o sistema lesse corretamente os dados simultâneos e acendesse os alertas.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Etapa 5 -->
+                <div class="ml-8 md:ml-10 fade-in-up relative group" style="transition-delay: 200ms;">
+                    <div class="absolute -left-[42px] md:-left-[50px] mt-1.5 w-8 h-8 bg-teal-500 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-white text-xs group-hover:scale-125 transition-transform pulse-dot"><i class="fa-solid fa-flag-checkered"></i></div>
+                    <div class="bg-gradient-to-br from-deepblue-900 to-blue-800 p-6 md:p-8 rounded-3xl text-white shadow-2xl transform hover:-translate-y-1 transition-all duration-300 border border-blue-700">
+                        <span class="text-[9px] font-extrabold text-blue-950 bg-teal-400 py-1.5 px-4 rounded-full mb-4 inline-block uppercase tracking-widest shadow-[0_0_10px_rgba(45,212,191,0.5)]">09 de Setembro de 2026</span>
+                        <h4 class="font-heading font-black text-base md:text-lg text-white mb-3">Testes Práticos e Análise Final</h4>
+                        <p class="text-blue-100 text-[11px] md:text-xs font-medium leading-relaxed mb-4">
+                            Reunião intensiva na Fazenda Lagoa para colocar o projeto em ação.
+                        </p>
+                        <ul class="list-disc pl-5 text-[11px] md:text-xs text-blue-200/90 space-y-1.5 font-medium">
+                            <li>Bateria de testes em múltiplas fontes (Torneira, Poço, Rio, Mineral).</li>
+                            <li>Organização estatística minuciosa dos dados coletados na tarde.</li>
+                            <li>Elaboração de gráficos comparativos definitivos.</li>
+                            <li>Preparação do relatório oficial, impressões em banner e treino da apresentação.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+        <!-- Secção: Perguntas Frequentes (FAQ) -->
+    <section id="faq" class="py-28 px-6 bg-white relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="text-center mb-16 fade-in-up">
+                <span class="text-blue-600 font-bold tracking-widest text-[10px] uppercase mb-3 block">Esclarecimentos</span>
+                <h2 class="font-heading text-xl md:text-2xl font-extrabold text-deepblue-950 mb-4">Perguntas Frequentes (FAQ)</h2>
+                <p class="text-gray-600 max-w-xl mx-auto text-xs font-medium">As principais dúvidas respondidas sobre o funcionamento técnico e os testes do protótipo.</p>
+                <div class="w-16 h-1.5 bg-blue-500 mx-auto rounded-full mt-6"></div>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Pergunta 1 -->
+                <div class="bg-blue-50/70 p-6 rounded-3xl border border-blue-100 shadow-sm hover:shadow-xl hover:border-blue-400 hover:-translate-y-1.5 transition-all duration-300 transform fade-in-up cursor-pointer group">
+                    <h3 class="font-heading font-extrabold text-sm text-deepblue-900 mb-2 flex items-center gap-3 group-hover:text-blue-600 transition-colors">
+                        <i class="fa-solid fa-circle-question text-blue-600 group-hover:scale-110 transition-transform"></i> Como foi feita a calibração dos sensores?
+                    </h3>
+                    <p class="text-gray-700 text-[11px] md:text-xs leading-relaxed font-medium pl-7">
+                        A calibração inicial foi efetuada utilizando amostras controlo (como água destilada e soluções padrão de referência) comparando os valores analógicos lidos pelo Arduino Nano com parâmetros laboratoriais conhecidos.
+                    </p>
+                </div>
+
+                <!-- Pergunta 2 -->
+                <div class="bg-blue-50/70 p-6 rounded-3xl border border-blue-100 shadow-sm hover:shadow-xl hover:border-blue-400 hover:-translate-y-1.5 transition-all duration-300 transform fade-in-up cursor-pointer group" style="transition-delay: 50ms;">
+                    <h3 class="font-heading font-extrabold text-sm text-deepblue-900 mb-2 flex items-center gap-3 group-hover:text-blue-600 transition-colors">
+                        <i class="fa-solid fa-circle-question text-blue-600 group-hover:scale-110 transition-transform"></i> Qual é a principal vantagem deste protótipo face a equipamentos comerciais?
+                    </h3>
+                    <p class="text-gray-700 text-[11px] md:text-xs leading-relaxed font-medium pl-7">
+                        O custo extremamente reduzido (cerca de R$ 360,10 no total) e a portabilidade, permitindo que comunidades escolares e rurais façam análises rápidas no local sem depender de laboratórios distantes.
+                    </p>
+                </div>
+
+                <!-- Pergunta 3 -->
+                <div class="bg-blue-50/70 p-6 rounded-3xl border border-blue-100 shadow-sm hover:shadow-xl hover:border-blue-400 hover:-translate-y-1.5 transition-all duration-300 transform fade-in-up cursor-pointer group" style="transition-delay: 100ms;">
+                    <h3 class="font-heading font-extrabold text-sm text-deepblue-900 mb-2 flex items-center gap-3 group-hover:text-blue-600 transition-colors">
+                        <i class="fa-solid fa-circle-question text-blue-600 group-hover:scale-110 transition-transform"></i> O circuito precisa de estar sempre ligado a um computador?
+                    </h3>
+                    <p class="text-gray-700 text-[11px] md:text-xs leading-relaxed font-medium pl-7">
+                        Não necessariamente. Embora seja programado via USB, em campo o Arduino Nano pode ser alimentado de forma autónoma por uma bateria portátil (power bank) de 5V.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Equipe -->
+    <section id="equipe" class="py-28 px-6 bg-blue-50 relative overflow-hidden">
+        <!-- Elementos Flutuantes de Fundo -->
+        <div class="absolute top-20 left-[10%] text-blue-300/15 text-7xl animate-float pointer-events-none"><i class="fa-solid fa-users"></i></div>
+        <div class="absolute bottom-20 right-[10%] text-cyan-300/15 text-8xl animate-float-rev pointer-events-none"><i class="fa-solid fa-graduation-cap"></i></div>
+
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-16 fade-in-up">
+                <h2 class="font-heading text-xl md:text-2xl font-extrabold text-deepblue-950 mb-3">Mentes Científicas</h2>
+                <p class="text-blue-600 font-extrabold mb-4 tracking-widest uppercase text-[11px]">CETIPES • Química • Orientação: Profª. Ivone Santos</p>
+                <div class="w-16 h-1.5 bg-blue-500 mx-auto rounded-full"></div>
+                <p class="text-[11px] text-gray-500 mt-4 font-medium">Toque sobre os cards interativos para visualizar as atribuições de cada um.</p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-6 text-center">
+                <div class="equipe-card w-40 h-56 fade-in-up cursor-pointer group">
+                    <div class="equipe-inner w-full h-full relative">
+                        <div class="equipe-front absolute w-full h-full bg-white flex flex-col justify-center items-center shadow-md p-4 border border-blue-100 rounded-3xl group-hover:shadow-xl transition-shadow">
+                            <div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 text-xl mb-3"><i class="fa-solid fa-brain"></i></div>
+                            <h4 class="font-extrabold text-deepblue-900 text-xs">Neham Almeida</h4>
+                        </div>
+                        <div class="equipe-back text-xs text-center rounded-3xl p-4 shadow-xl">
+                            <p class="font-extrabold text-teal-300 mb-2 uppercase text-[9px] tracking-widest border-b border-blue-800/50 pb-2">Atribuição</p>
+                            <p class="font-medium text-[10px] leading-relaxed">Criação do Diário de Bordo, Software C++, pesquisas centrais e testes principais.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="equipe-card w-40 h-56 fade-in-up cursor-pointer group" style="transition-delay: 50ms;">
+                    <div class="equipe-inner w-full h-full relative">
+                        <div class="equipe-front absolute w-full h-full bg-white flex flex-col justify-center items-center shadow-md p-4 border border-blue-100 rounded-3xl group-hover:shadow-xl transition-shadow">
+                            <div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 text-xl mb-3"><i class="fa-solid fa-calculator"></i></div>
+                            <h4 class="font-extrabold text-deepblue-900 text-xs">Jusiley Araújo</h4>
+                        </div>
+                        <div class="equipe-back text-xs text-center rounded-3xl p-4 shadow-xl">
+                            <p class="font-extrabold text-teal-300 mb-2 uppercase text-[9px] tracking-widest border-b border-blue-800/50 pb-2">Atribuição</p>
+                            <p class="font-medium text-[10px] leading-relaxed">Apoio direto e estratégico à equipe, gestão de custos e pesquisas documentais.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="equipe-card w-40 h-56 fade-in-up cursor-pointer group" style="transition-delay: 100ms;">
+                    <div class="equipe-inner w-full h-full relative">
+                        <div class="equipe-front absolute w-full h-full bg-white flex flex-col justify-center items-center shadow-md p-4 border border-blue-100 rounded-3xl group-hover:shadow-xl transition-shadow">
+                            <div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 text-xl mb-3"><i class="fa-solid fa-lightbulb"></i></div>
+                            <h4 class="font-extrabold text-deepblue-900 text-xs">Maycon Santana</h4>
+                        </div>
+                        <div class="equipe-back text-xs text-center rounded-3xl p-4 shadow-xl">
+                            <p class="font-extrabold text-teal-300 mb-2 uppercase text-[9px] tracking-widest border-b border-blue-800/50 pb-2">Atribuição</p>
+                            <p class="font-medium text-[10px] leading-relaxed">Fonte central de ideias conceituais, testes de bancada e organização do orçamento.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="equipe-card w-40 h-56 fade-in-up cursor-pointer group" style="transition-delay: 150ms;">
+                    <div class="equipe-inner w-full h-full relative">
+                        <div class="equipe-front absolute w-full h-full bg-white flex flex-col justify-center items-center shadow-md p-4 border border-blue-100 rounded-3xl group-hover:shadow-xl transition-shadow">
+                            <div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 text-xl mb-3"><i class="fa-solid fa-wrench"></i></div>
+                            <h4 class="font-extrabold text-deepblue-900 text-xs">Guilherme Carvalho</h4>
+                        </div>
+                        <div class="equipe-back text-xs text-center rounded-3xl p-4 shadow-xl">
+                            <p class="font-extrabold text-teal-300 mb-2 uppercase text-[9px] tracking-widest border-b border-blue-800/50 pb-2">Atribuição</p>
+                            <p class="font-medium text-[10px] leading-relaxed">Responsável pela montagem física do circuito e estruturação do protótipo final.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="equipe-card w-40 h-56 fade-in-up cursor-pointer group" style="transition-delay: 200ms;">
+                    <div class="equipe-inner w-full h-full relative">
+                        <div class="equipe-front absolute w-full h-full bg-white flex flex-col justify-center items-center shadow-md p-4 border border-blue-100 rounded-3xl group-hover:shadow-xl transition-shadow">
+                            <div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 text-xl mb-3"><i class="fa-solid fa-comments"></i></div>
+                            <h4 class="font-extrabold text-deepblue-900 text-xs">Alêssa Vasconcelos</h4>
+                        </div>
+                        <div class="equipe-back text-xs text-center rounded-3xl p-4 shadow-xl">
+                            <p class="font-extrabold text-teal-300 mb-2 uppercase text-[9px] tracking-widest border-b border-blue-800/50 pb-2">Atribuição</p>
+                            <p class="font-medium text-[10px] leading-relaxed">Articulação do grupo, facilitação em discussões de ideias estruturais e logísticas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="equipe-card w-40 h-56 fade-in-up cursor-pointer group" style="transition-delay: 250ms;">
+                    <div class="equipe-inner w-full h-full relative">
+                        <div class="equipe-front absolute w-full h-full bg-white flex flex-col justify-center items-center shadow-md p-4 border border-blue-100 rounded-3xl group-hover:shadow-xl transition-shadow">
+                            <div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 text-xl mb-3"><i class="fa-solid fa-vial"></i></div>
+                            <h4 class="font-extrabold text-deepblue-900 text-xs">Rayssa Menezes</h4>
+                        </div>
+                        <div class="equipe-back text-xs text-center rounded-3xl p-4 shadow-xl">
+                            <p class="font-extrabold text-teal-300 mb-2 uppercase text-[9px] tracking-widest border-b border-blue-800/50 pb-2">Atribuição</p>
+                            <p class="font-medium text-[10px] leading-relaxed">Liderança na pesquisa de campo, testes práticos e organização da equipe geral.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="equipe-card w-40 h-56 fade-in-up cursor-pointer group" style="transition-delay: 300ms;">
+                    <div class="equipe-inner w-full h-full relative">
+                        <div class="equipe-front absolute w-full h-full bg-white flex flex-col justify-center items-center shadow-md p-4 border border-blue-100 rounded-3xl group-hover:shadow-xl transition-shadow">
+                            <div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 text-xl mb-3"><i class="fa-solid fa-magnifying-glass"></i></div>
+                            <h4 class="font-extrabold text-deepblue-900 text-xs">Ana Beatriz Bela</h4>
+                        </div>
+                        <div class="equipe-back text-xs text-center rounded-3xl p-4 shadow-xl">
+                            <p class="font-extrabold text-teal-300 mb-2 uppercase text-[9px] tracking-widest border-b border-blue-800/50 pb-2">Atribuição</p>
+                            <p class="font-medium text-[10px] leading-relaxed">Foco investigativo com o levantamento primário da qualidade da água na comunidade.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+            <!-- Secção: Agradecimentos -->
+    <section id="agradecimentos" class="py-28 px-6 bg-deepblue-950 text-white relative overflow-hidden">
+        <div class="bubbles">
+            <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+            <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+        </div>
+
+        <div class="max-w-4xl mx-auto relative z-10 text-center">
+            <div class="mb-16 fade-in-up">
+                <span class="text-teal-400 font-bold tracking-widest text-[10px] uppercase mb-3 block">Reconhecimento e Apoio</span>
+                <h2 class="font-heading text-xl md:text-2xl font-extrabold mb-4">Agradecimentos</h2>
+                <p class="text-blue-200 max-w-xl mx-auto text-xs font-medium">Um agradecimento especial a todos os que contribuíram diretamente para a concretização deste projeto científico.</p>
+                <div class="w-16 h-1.5 bg-teal-400 mx-auto rounded-full mt-6"></div>
+            </div>
+
+            <!-- Cartão principal com animação de subida e hover brilhante -->
+            <div class="bg-deepblue-900/60 border border-blue-700/50 p-8 md:p-10 rounded-3xl shadow-2xl hover:border-teal-400 hover:shadow-[0_0_35px_rgba(45,212,191,0.25)] transition-all duration-300 transform hover:-translate-y-2 fade-in-up backdrop-blur-sm group">
+                <div class="w-16 h-16 bg-teal-400/10 text-teal-300 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                
+                <p class="text-blue-100/90 text-xs md:text-sm leading-relaxed font-medium mb-6">
+                    Expressamos a nossa profunda gratidão à nossa professora orientadora <strong>Ivone Santos</strong>, pela incansável dedicação, orientação técnica e incentivo constante ao longo de todas as etapas de desenvolvimento no <strong>CETIPES</strong>.
+                </p>
+                <p class="text-blue-100/90 text-xs md:text-sm leading-relaxed font-medium mb-8">
+                    Agradecemos também às nossas famílias e à comunidade de Sátiro Dias pelo apoio logístico e estrutural concedido durante os testes práticos de campo no município..
+                </p>
+
+                <div class="border-t border-blue-800/60 pt-6">
+                    <p class="text-[10px] font-extrabold uppercase tracking-widest text-teal-300 mb-4">Equipe de Estudantes Envolvidos</p>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <span class="bg-blue-900/80 border border-blue-700/50 px-4 py-2 rounded-full text-[11px] font-semibold text-blue-200 shadow-sm hover:scale-105 hover:bg-blue-800 transition-all cursor-default">Neham Almeida</span>
+                        <span class="bg-blue-900/80 border border-blue-700/50 px-4 py-2 rounded-full text-[11px] font-semibold text-blue-200 shadow-sm hover:scale-105 hover:bg-blue-800 transition-all cursor-default">Jusiley Araújo</span>
+                        <span class="bg-blue-900/80 border border-blue-700/50 px-4 py-2 rounded-full text-[11px] font-semibold text-blue-200 shadow-sm hover:scale-105 hover:bg-blue-800 transition-all cursor-default">Maycon Santana</span>
+                        <span class="bg-blue-900/80 border border-blue-700/50 px-4 py-2 rounded-full text-[11px] font-semibold text-blue-200 shadow-sm hover:scale-105 hover:bg-blue-800 transition-all cursor-default">Guilherme Carvalho</span>
+                        <span class="bg-blue-900/80 border border-blue-700/50 px-4 py-2 rounded-full text-[11px] font-semibold text-blue-200 shadow-sm hover:scale-105 hover:bg-blue-800 transition-all cursor-default">Alêssa Vasconcelos</span>
+                        <span class="bg-blue-900/80 border border-blue-700/50 px-4 py-2 rounded-full text-[11px] font-semibold text-blue-200 shadow-sm hover:scale-105 hover:bg-blue-800 transition-all cursor-default">Rayssa Menezes</span>
+                        <span class="bg-blue-900/80 border border-blue-700/50 px-4 py-2 rounded-full text-[11px] font-semibold text-blue-200 shadow-sm hover:scale-105 hover:bg-blue-800 transition-all cursor-default">Ana Beatriz Bela</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+                <!-- Footer -->
+    <footer class="bg-deepblue-950 text-blue-200 py-12 text-center relative overflow-hidden">
+        <div class="max-w-5xl mx-auto px-6 relative z-10 flex flex-col items-center">
+            <i class="fa-solid fa-droplet text-blue-500 text-2xl mb-5 block animate-bounce"></i>
+            <p class="mb-2 font-extrabold text-xs text-white">Projeto Científico Tecnológico • Feira de Ciências 2026</p>
+            <p class="opacity-80 mb-6 font-medium text-[11px]">Sátiro Dias, Bahia • Disciplina de Química • ODS 6 ONU</p>
+            <div class="w-full max-w-2xl h-px bg-blue-900/60 mb-6"></div>
+            <p class="text-[9px] opacity-60 tracking-widest uppercase font-extrabold">Desenvolvido com excelência por estudantes do CETIPES.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts de Interatividade -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: "0px 0px -40px 0px"
+            });
+
+            document.querySelectorAll('.fade-in-up').forEach((el) => {
+                observer.observe(el);
+            });
+        });
+
+        function simular(fonte) {
+            const titleEl = document.getElementById('sim-title');
+            const tempEl = document.getElementById('sim-temp');
+            const turbEl = document.getElementById('sim-turb');
+            const condEl = document.getElementById('sim-cond');
+            const descEl = document.getElementById('sim-desc');
+            const descContainer = document.getElementById('sim-desc-container');
+            const led = document.getElementById('led-status');
+            
+            titleEl.innerText = "Processando Dados...";
+            tempEl.innerText = "--";
+            turbEl.innerText = "--";
+            condEl.innerText = "--";
+            descEl.innerText = "Lendo conversão analógica dos sensores...";
+            
+            descContainer.className = "w-full mt-2 py-3 px-4 rounded-xl border-[3px] bg-slate-950 border-yellow-500 shadow-[0_0_20px_rgba(234,179,8,0.4)] transition-all duration-300";
+            descEl.className = "text-xs md:text-sm font-black uppercase tracking-wider text-yellow-300";
+            
+            led.className = "w-3 h-3 rounded-full animate-pulse bg-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.8)]";
+            
+            setTimeout(() => {
+                if(fonte === 'torneira') {
+                    titleEl.innerText = "Amostra: Água da Torneira";
+                    tempEl.innerText = "24.5";
+                    turbEl.innerText = "0.8";
+                    condEl.innerText = "120";
+                    descEl.innerText = "OK: Padrão seguro. Água tratada e límpida.";
+                    
+                    descContainer.className = "w-full mt-2 py-3 px-4 rounded-xl border-[3px] bg-slate-950 border-green-500 shadow-[0_0_25px_rgba(34,197,94,0.4)] transition-all duration-300";
+                    descEl.className = "text-xs md:text-sm font-black uppercase tracking-wider text-green-300";
+                    led.className = "w-3 h-3 rounded-full bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.8)]";
+                } 
+                else if(fonte === 'poco') {
+                    titleEl.innerText = "Amostra: Água de Poço";
+                    tempEl.innerText = "21.0";
+                    turbEl.innerText = "4.5";
+                    condEl.innerText = "650";
+                    descEl.innerText = "ALERTA: Alta presença de sais minerais e partículas.";
+                    
+                    descContainer.className = "w-full mt-2 py-3 px-4 rounded-xl border-[3px] bg-slate-950 border-orange-500 shadow-[0_0_25px_rgba(249,115,22,0.4)] transition-all duration-300";
+                    descEl.className = "text-xs md:text-sm font-black uppercase tracking-wider text-orange-300";
+                    led.className = "w-3 h-3 rounded-full bg-orange-500 animate-pulse shadow-[0_0_15px_rgba(249,115,22,0.8)]";
+                }
+                else if(fonte === 'rio') {
+                    titleEl.innerText = "Amostra: Água de Rio";
+                    tempEl.innerText = "26.2";
+                    turbEl.innerText = "38.0";
+                    condEl.innerText = "180";
+                    descEl.innerText = "PERIGO: Alta turbidez detectada. Imprópria para consumo direto.";
+                    
+                    descContainer.className = "w-full mt-2 py-3 px-4 rounded-xl border-[3px] bg-slate-950 border-red-500 shadow-[0_0_25px_rgba(239,68,68,0.4)] transition-all duration-300";
+                    descEl.className = "text-xs md:text-sm font-black uppercase tracking-wider text-red-300";
+                    led.className = "w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.8)]";
+                }
+                else if(fonte === 'chuva') {
+                    titleEl.innerText = "Amostra: Água da Chuva";
+                    tempEl.innerText = "20.1";
+                    turbEl.innerText = "1.2";
+                    condEl.innerText = "15";
+                    descEl.innerText = "INFO: Água límpida, porém muito pobre em minerais condutores.";
+                    
+                    descContainer.className = "w-full mt-2 py-3 px-4 rounded-xl border-[3px] bg-slate-950 border-blue-400 shadow-[0_0_25px_rgba(96,165,250,0.4)] transition-all duration-300";
+                    descEl.className = "text-xs md:text-sm font-black uppercase tracking-wider text-blue-300";
+                    led.className = "w-3 h-3 rounded-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.8)]";
+                }
+                else if(fonte === 'mineral') {
+                    titleEl.innerText = "Amostra: Água Mineral";
+                    tempEl.innerText = "22.5";
+                    turbEl.innerText = "0.0";
+                    condEl.innerText = "250";
+                    descEl.innerText = "IDEAL: Água límpida, segura e com minerais equilibrados.";
+                    
+                    descContainer.className = "w-full mt-2 py-3 px-4 rounded-xl border-[3px] bg-slate-950 border-green-400 shadow-[0_0_25px_rgba(74,222,128,0.4)] transition-all duration-300";
+                    descEl.className = "text-xs md:text-sm font-black uppercase tracking-wider text-green-300";
+                    led.className = "w-3 h-3 rounded-full bg-green-400 shadow-[0_0_15px_rgba(74,222,128,0.8)]";
+                }
+                else if(fonte === 'reset') {
+                    titleEl.innerText = "Aguardando Amostra...";
+                    tempEl.innerText = "--";
+                    turbEl.innerText = "--";
+                    condEl.innerText = "--";
+                    descEl.innerText = "Pronto para iniciar leitura dos sensores.";
+                    
+                    descContainer.className = "w-full mt-2 py-3 px-4 rounded-xl border-[3px] bg-slate-950 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all duration-300";
+                    descEl.className = "text-xs md:text-sm font-black uppercase tracking-wider text-green-300";
+                    led.className = "w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.8)]";
+                }
+            }, 1200); 
+        }
+
+                function abrirModal(titulo, descricao, iconeClass) {
+            const modal = document.getElementById('galeriaModal');
+            const modalContent = document.getElementById('modalContent');
+            const modalTitulo = document.getElementById('modalTitulo');
+            const modalDescricao = document.getElementById('modalDescricao');
+            const modalIcon = document.getElementById('modalIcon');
+
+            modalTitulo.innerText = titulo;
+            modalDescricao.innerText = descricao;
+            modalIcon.className = iconeClass + " text-3xl";
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function fecharModal() {
+            const modal = document.getElementById('galeriaModal');
+            const modalContent = document.getElementById('modalContent');
+
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        // Permitir fechar o modal clicando fora da caixa de conteúdo
+        window.onclick = function(event) {
+            const modal = document.getElementById('galeriaModal');
+            if (event.target == modal) {
+                fecharModal();
+            }
+        }
+
+        function toggleMenu() {
+            const menuOverlay = document.getElementById('menuOverlay');
+            const menuDrawer = document.getElementById('menuDrawer');
+
+            if (menuOverlay.classList.contains('hidden')) {
+                // Abre o menu
+                menuOverlay.classList.remove('hidden');
+                setTimeout(() => {
+                    menuOverlay.classList.remove('opacity-0');
+                    menuOverlay.classList.add('opacity-100');
+                    menuDrawer.classList.remove('translate-x-full');
+                    menuDrawer.classList.add('translate-x-0');
+                }, 10);
+            } else {
+                // Fecha o menu com animação suave
+                menuOverlay.classList.remove('opacity-100');
+                menuOverlay.classList.add('opacity-0');
+                menuDrawer.classList.remove('translate-x-0');
+                menuDrawer.classList.add('translate-x-full');
+                setTimeout(() => {
+                    menuOverlay.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        function togglePill(button) {
+            const isActive = button.classList.contains('-translate-y-2');
+            
+            // Seleciona todas as pílulas/botões interativos da capa
+            const allPills = document.querySelectorAll('button[onclick^="togglePill"]');
+            
+            // Reseta (faz descer) todas as pílulas para o estado original
+            allPills.forEach(pill => {
+                pill.classList.remove('-translate-y-2', 'bg-blue-700', 'border-teal-400', 'shadow-[0_0_25px_rgba(45,212,191,0.6)]');
+                pill.classList.add('bg-blue-900/60', 'border-blue-700/50');
+            });
+            
+            // Se a pílula clicada não estava ativa, ativa-a (faz subir e brilha). Se já estava, fica desativada.
+            if (!isActive) {
+                button.classList.add('-translate-y-2', 'bg-blue-700', 'border-teal-400', 'shadow-[0_0_25px_rgba(45,212,191,0.6)]');
+                button.classList.remove('bg-blue-900/60', 'border-blue-700/50');
+            }
+        } // <--- ESTA CHAVETA ESTAVA EM FALTA E TRAVAVA TODO O JAVASCRIPT
+
+    </script>
+
+    <!-- Janela Modal (Ecrã de Visualização Detalhada) -->
+    <div id="galeriaModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-6 transition-opacity duration-300">
+        </div>
+
+    <!-- Menu Sumário Lateral (Gaveta Profissional à Direita) -->
+    <div id="menuOverlay" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 flex justify-end" onclick="toggleMenu()">
+        <!-- Caixa do Menu (Desliza da direita) -->
+        <div id="menuDrawer" class="w-80 max-w-full h-full bg-deepblue-950 border-l border-blue-800/50 p-8 flex flex-col justify-between transform translate-x-full transition-transform duration-300 shadow-2xl relative" onclick="event.stopPropagation()">
+            
+            <!-- Topo do Menu -->
+            <div>
+                <div class="flex justify-between items-center mb-10">
+                    <span class="text-teal-400 font-bold tracking-[0.2em] text-[10px] uppercase">Sumário do Projeto</span>
+                    <!-- Botão Fechar -->
+                    <button onclick="toggleMenu()" class="text-white text-base bg-white/10 hover:bg-white/20 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Links do Sumário -->
+                <div class="flex flex-col space-y-5 font-heading font-extrabold text-xs uppercase tracking-widest text-blue-100">
+                    <a href="#problema" onclick="toggleMenu()" class="hover:text-teal-300 hover:translate-x-1 transition-all flex items-center gap-3"><i class="fa-solid fa-chevron-right text-[9px] text-teal-400"></i> O Problema</a>
+                    <a href="#simulador" onclick="toggleMenu()" class="hover:text-teal-300 hover:translate-x-1 transition-all flex items-center gap-3"><i class="fa-solid fa-chevron-right text-[9px] text-teal-400"></i> Simulador</a>
+                    <a href="#metodologia" onclick="toggleMenu()" class="hover:text-teal-300 hover:translate-x-1 transition-all flex items-center gap-3"><i class="fa-solid fa-chevron-right text-[9px] text-teal-400"></i> Metodologia</a>
+                    <a href="#dados" onclick="toggleMenu()" class="hover:text-teal-300 hover:translate-x-1 transition-all flex items-center gap-3"><i class="fa-solid fa-chevron-right text-[9px] text-teal-400"></i> Dados</a>
+                    <a href="#recomendacoes" onclick="toggleMenu()" class="hover:text-teal-300 hover:translate-x-1 transition-all flex items-center gap-3"><i class="fa-solid fa-chevron-right text-[9px] text-teal-400"></i> Dicas</a>
+                    <a href="#custos" onclick="toggleMenu()" class="hover:text-teal-300 hover:translate-x-1 transition-all flex items-center gap-3"><i class="fa-solid fa-chevron-right text-[9px] text-teal-400"></i> Hardware</a>
+                    <a href="#futuro" onclick="toggleMenu()" class="hover:text-teal-300 hover:translate-x-1 transition-all flex items-center gap-3"><i class="fa-solid fa-chevron-right text-[9px] text-teal-400"></i> Futuro</a>
+                    <a href="#diario" onclick="toggleMenu()" class="hover:text-teal-300 hover:translate-x-1 transition-all flex items-center gap-3"><i class="fa-solid fa-chevron-right text-[9px] text-teal-400"></i> Diário</a>
+                    <a href="#equipe" onclick="toggleMenu()" class="hover:text-teal-300 hover:translate-x-1 transition-all flex items-center gap-3"><i class="fa-solid fa-chevron-right text-[9px] text-teal-400"></i> Equipa</a>
+                </div>
+            </div>
+
+            <!-- Rodapé do Menu -->
+            <div class="border-t border-blue-900/60 pt-6 text-center">
+                <p class="text-[9px] text-blue-300/60 uppercase tracking-widest font-bold">Feira de Ciências 2026</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
