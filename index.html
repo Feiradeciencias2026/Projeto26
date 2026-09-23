@@ -1416,7 +1416,32 @@
                 button.classList.add('-translate-y-2', 'bg-blue-700', 'border-teal-400', 'shadow-[0_0_25px_rgba(45,212,191,0.6)]');
                 button.classList.remove('bg-blue-900/60', 'border-blue-700/50');
             }
-        } // <--- ESTA CHAVETA ESTAVA EM FALTA E TRAVAVA TODO O JAVASCRIPT
+        } //
+
+  async function enviarMensagem(texto) {
+    // ATENÇÃO: Esta chave fica visível para qualquer visitante do site
+    const API_KEY = "AQUI_VAI_A_TUA_CHAVE_API"; 
+    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+    try {
+      const response = await fetch(URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: texto }] }]
+        })
+      });
+
+      const data = await response.json();
+      console.log("Resposta do Gemini:", data);
+      return data.candidates[0].content.parts[0].text;
+    } catch (erro) {
+      console.error("Erro ao chamar o Gemini:", erro);
+    }
+}
+  
 
     </script>
 
