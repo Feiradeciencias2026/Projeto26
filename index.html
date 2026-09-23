@@ -338,6 +338,400 @@
                 </div>
             </div>
         </div>
+/* ========================================
+   ASSISTENTE IA - PROJETO 
+======================================== */
+
+.ia-container {
+    position: fixed;
+    right: 28px;
+    top: 60%;
+    transform: translateY(-50%);
+    z-index: 9999;
+}
+
+/* BOTÃO FLUTUANTE */
+
+.ia-botao {
+    width: 62px;
+    height: 62px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #0b3d91;
+    color: white;
+
+    font-size: 28px;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.30);
+
+    animation: iaFlutuar 3s ease-in-out infinite;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.ia-botao:hover {
+    animation-play-state: paused;
+
+    transform: scale(1.10);
+
+    box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.40);
+}
+
+@keyframes iaFlutuar {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+
+/* JANELA DO CHAT */
+
+.ia-chat {
+
+    position: absolute;
+
+    right: 0;
+    bottom: 78px;
+
+    width: 360px;
+    height: 500px;
+
+    background: #061a36;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.12);
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.45);
+
+    opacity: 0;
+
+    transform:
+        translateY(20px)
+        scale(0.95);
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+/* CHAT ABERTO */
+
+.ia-chat.aberto {
+
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        scale(1);
+
+    pointer-events: auto;
+}
+
+
+/* CABEÇALHO */
+
+.ia-header {
+
+    min-height: 65px;
+
+    padding: 0 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    background: #082653;
+
+    color: white;
+}
+
+.ia-header strong {
+
+    display: block;
+
+    font-size: 15px;
+}
+
+.ia-header span {
+
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 11px;
+
+    color: #54e38e;
+}
+
+
+/* BOTÃO FECHAR */
+
+.ia-fechar {
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 27px;
+
+    cursor: pointer;
+
+    line-height: 1;
+}
+
+
+/* ÁREA DAS MENSAGENS */
+
+.ia-mensagens {
+
+    flex: 1;
+
+    padding: 16px;
+
+    overflow-y: auto;
+
+    scroll-behavior: smooth;
+}
+
+
+/* MENSAGENS */
+
+.mensagem {
+
+    max-width: 85%;
+
+    padding: 11px 14px;
+
+    margin-bottom: 12px;
+
+    border-radius: 14px;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+    word-wrap: break-word;
+}
+
+
+/* MENSAGEM DA IA */
+
+.mensagem.ia {
+
+    background: #102e59;
+
+    color: #f2f6ff;
+
+    border-bottom-left-radius: 4px;
+}
+
+
+/* MENSAGEM DO VISITANTE */
+
+.mensagem.usuario {
+
+    margin-left: auto;
+
+    background: #0b4da2;
+
+    color: white;
+
+    border-bottom-right-radius: 4px;
+}
+
+
+/* ÁREA DE DIGITAÇÃO */
+
+.ia-entrada {
+
+    display: flex;
+
+    gap: 8px;
+
+    padding: 12px;
+
+    background: #05162d;
+}
+
+
+/* CAMPO */
+
+.ia-entrada input {
+
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 12px;
+
+    border: none;
+
+    outline: none;
+
+    border-radius: 12px;
+
+    background: #102e59;
+
+    color: white;
+
+    font-size: 14px;
+}
+
+.ia-entrada input::placeholder {
+
+    color: #9eabc0;
+}
+
+
+/* BOTÃO ENVIAR */
+
+.ia-entrada button {
+
+    width: 44px;
+
+    min-width: 44px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #0b4da2;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 18px;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+.ia-entrada button:hover {
+
+    transform: scale(1.05);
+
+    background: #1465c0;
+}
+
+
+/* BOTÃO DESABILITADO */
+
+.ia-entrada button:disabled {
+
+    opacity: 0.5;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* CARREGANDO */
+
+.ia-carregando {
+
+    opacity: 0.75;
+}
+
+.ia-pontos {
+
+    animation: iaPontos 1.2s infinite;
+}
+
+@keyframes iaPontos {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+
+/* BARRA DE ROLAGEM */
+
+.ia-mensagens::-webkit-scrollbar {
+
+    width: 5px;
+}
+
+.ia-mensagens::-webkit-scrollbar-thumb {
+
+    background: #315783;
+
+    border-radius: 10px;
+}
+
+
+/* CELULAR */
+
+@media (max-width: 500px) {
+
+    .ia-container {
+
+        right: 15px;
+
+        top: 62%;
+    }
+
+    .ia-botao {
+
+        width: 58px;
+
+        height: 58px;
+
+        font-size: 25px;
+    }
+
+    .ia-chat {
+
+        width: calc(100vw - 30px);
+
+        height: 70vh;
+
+        right: 0;
+
+        bottom: 70px;
+    }
+}
+
     </section>
 
     <!-- Simulador Interativo -->
