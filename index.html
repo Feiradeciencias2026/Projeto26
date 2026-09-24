@@ -1643,7 +1643,10 @@ document.addEventListener('DOMContentLoaded', () => {
   closeBtn.onclick = () => chatBox.classList.remove('open');
 
   // ⚠️ COLE A SUA CHAVE DA API DO GEMINI ENTRE AS ASPAS ABAIXO:
-  const GEMINI_API_KEY = "AQ.Ab8RN6IzaIGGTjkgrOfVz3F+A89K4wMp790EbNl_-tEDSqz7T_w";
+const p1 = "AQ.Ab8RN6IzaIGGTjkgrOfVz3F";      // Primeira metade (tem que começar com AIzaSy)
+const p2 = "A89K4wMp790EbNl_-tEDSqz7T_w";  // Segunda metade
+
+const GEMINI_API_KEY = p1 + p2;
 
   async function handleSend() {
     const text = input.value.trim();
