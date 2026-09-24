@@ -210,21 +210,26 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Botão Flutuante */
+/* Botão Flutuante Circular */
 .ai-float-btn {
   background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
   color: #ffffff;
   border: none;
-  padding: 14px 22px;
-  border-radius: 50px;
-  font-size: 15px;
-  font-weight: 600;
+  width: 55px;             /* Largura fixa para formar um círculo */
+  height: 55px;            /* Altura fixa igual à largura */
+  border-radius: 50%;      /* Deixa redondo */
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
   animation: floatAnimation 3s ease-in-out infinite;
   transition: transform 0.2s ease;
+}
+
+.ai-float-btn:active {
+  transform: scale(0.90);
 }
 
 .ai-float-btn:active {
@@ -1392,7 +1397,9 @@
 <!-- ESTRUTURA DO CHAT IA -->
 <div class="ai-chat-wrapper">
   <button id="ai-toggle-btn" class="ai-float-btn">
-    <span>✨ Assistente IA</span>
+  <span>IA</span>
+</button>
+
   </button>
 
   <div id="ai-box" class="ai-chat-box">
