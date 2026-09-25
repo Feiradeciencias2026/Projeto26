@@ -1643,6 +1643,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // O navegador desembaralha a chave sem o robô do GitHub detetar
   const GEMINI_API_KEY = atob(chaveEmbaralhada.trim());
 
+    // Contexto para a IA responder sobre o projeto da feira
+const PROJETO_CONTEXTO = "És o assistente virtual do projeto 'Monitorização da Qualidade da Água (PQA)' para a Feira de Ciências 2026. O projeto utiliza um sistema portátil de baixo custo baseado em Arduino Nano e sensores para proteger e analisar recursos hídricos e poços rurais. Responde de forma clara, educada e concisa em português.";
+
   async function handleSend() {
     const text = input.value.trim();
     if (!text) return;
