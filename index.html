@@ -1662,8 +1662,11 @@ document.addEventListener('DOMContentLoaded', () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: text }] }]
-          })
+  system_instruction: {
+    parts: [{ text: PROJETO_CONTEXTO }]
+  },
+  contents: [{ parts: [{ text: text }] }]
+})
         }
       );
 
@@ -1674,6 +1677,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
         const reply = data.candidates[0].content.parts[0].text;
         messagesContainer.innerHTML += `<div class="ai-msg bot">${reply}</div>`;
+      } else if (data.error && data.error.code === 503) {
+  messagesContainer.innerHTML += `<div class="ai-msg bot" style="background: rgba(255,165,0,0.2);">O servidor está com muitos acessos no momento. Por favor, tenta novamente dentro de alguns segundos!</div>`;
       } else if (data.error) {
         messagesContainer.innerHTML += `<div class="ai-msg bot" style="background: rgba(255,0,0,0.2);">Erro: ${data.error.message}</div>`;
       } else {
