@@ -1540,18 +1540,33 @@
             }
       } //
 
-document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
   const toggleBtn = document.getElementById('ai-toggle-btn');
   const closeBtn = document.getElementById('ai-close-btn');
   const chatBox = document.getElementById('ai-box');
+
+  // Garante a abertura e fecho da janela SEMPRE, sem travar o código
+  if (toggleBtn && chatBox) {
+    toggleBtn.onclick = (e) => {
+      e.preventDefault();
+      chatBox.classList.toggle('open');
+    };
+  }
+  
+  if (closeBtn && chatBox) {
+    closeBtn.onclick = (e) => {
+      e.preventDefault();
+      chatBox.classList.remove('open');
+    };
+  }
+
   const sendBtn = document.getElementById('ai-send-btn');
   const input = document.getElementById('ai-input');
   const messagesContainer = document.getElementById('ai-messages');
 
-  if (!toggleBtn || !chatBox || !sendBtn || !input || !messagesContainer) return;
+  if (!sendBtn || !input || !messagesContainer) return;
 
-  toggleBtn.onclick = () => chatBox.classList.toggle('open');
-  if (closeBtn) closeBtn.onclick = () => chatBox.classList.remove('open');
+  // ... (o restante do código com as variáveis p1, p2 ou Base64 continua igual aqui abaixo)
 
   // CÓDIGO EMBARALHADO DO BASE64:
   const chaveEmbaralhada = "QVEuQWI4Uk42SXphSUdHVGprZ3JPZlZ6M0ZBODlLNHdNcDc5MEViTmxfLXRFRFNxejdUX3c=";
