@@ -249,14 +249,21 @@
   visibility: hidden;
   transition: all 0.3s ease;
 }
-        
+
+#ai-box {
+  position: fixed !important;
+  bottom: 85px !important;
+  right: 25px !important;
+  z-index: 99999 !important; /* Garante que fica à frente de todo o site */
+}
+
+/* Quando a classe .open é ativada pelo clique */
 #ai-box.open {
-  opacity: 1 !important;
-  transform: scale(1) translateY(0) !important;
-  pointer-events: all !important;
-  visibility: visible !important;
   display: flex !important;
-  z-index: 10000 !important; /* Garante que fica por cima do site */
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: scale(1) translateY(0) !important;
 }
 
 /* Animação das bolhas de mensagem surgindo suavemente */
@@ -1313,9 +1320,10 @@
 
 <!-- ESTRUTURA DO CHAT IA -->
 <div class="ai-chat-wrapper">
-  <button id="ai-toggle-btn" class="ai-float-btn">
+    
+<button id="ai-toggle-btn" class="ai-float-btn" onclick="document.getElementById('ai-box').classList.toggle('open')">
   <span>aquaIA</span>
-  </button>
+</button>
 
   <div id="ai-box" class="ai-chat-box">
     <div class="ai-header">
