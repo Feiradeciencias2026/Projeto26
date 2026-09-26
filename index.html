@@ -329,6 +329,15 @@
   cursor: pointer !important;
   font-weight: bold !important;
 }
+        
+.ai-msg {
+  font-weight: 600 !important;
+}
+
+#ai-input {
+  font-weight: 600 !important;
+}
+
 
     </style>
 </head>
@@ -1641,34 +1650,48 @@ const PROJETO_CONTEXTO = "És o assistente virtual do projeto. Responde de forma
     messagesContainer.innerHTML += `<div id="${loadingId}" class="ai-msg bot">A pensar...</div>`;
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    try {
-      const response = await fetch(
-  `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`,
-  {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      system_instruction: {
-        parts: [{ text: PROJETO_CONTEXTO }]
-      }, 
-      contents: [{ parts: [{ text: text }] }]
-    })
-  }
-);
+        try {
+      let data;
+      let tentativas = 3;
 
-      const data = await response.json();
+      // Loop de tentativas automáticas caso o servidor esteja ocupado
+      while (tentativas > 0) {
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              system_instruction: { parts: [{ text: PROJETO_CONTEXTO }] },
+              contents: [{ parts: [{ text: text }] }]
+            })
+          }
+        );
+
+        data = await response.json();
+
+        // Se respondeu com sucesso ou com um erro diferente de 503, sai do loop
+        if (data.candidates || (data.error && data.error.code !== 503)) {
+          break;
+        }
+
+        // Se for erro 503 (servidor ocupado), aguarda 1,5s antes de tentar de novo
+        tentativas--;
+        if (tentativas > 0) {
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+      }
+
       const loadingEl = document.getElementById(loadingId);
       if (loadingEl) loadingEl.remove();
 
-      if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+      if (data && data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
         const reply = data.candidates[0].content.parts[0].text;
         messagesContainer.innerHTML += `<div class="ai-msg bot">${reply}</div>`;
-      } else if (data.error && data.error.code === 503) {
-  messagesContainer.innerHTML += `<div class="ai-msg bot" style="background: rgba(255,165,0,0.2);">O servidor está com muitos acessos no momento. Por favor, tenta novamente dentro de alguns segundos!</div>`;
-      } else if (data.error) {
-        messagesContainer.innerHTML += `<div class="ai-msg bot" style="background: rgba(255,0,0,0.2);">Erro: ${data.error.message}</div>`;
+      } else if (data && data.error) {
+        messagesContainer.innerHTML += `<div class="ai-msg bot" style="background: rgba(255,0,0,0.2);">O servidor está instável no momento. Por favor, tente novamente em instantes.</div>`;
       } else {
-        messagesContainer.innerHTML += `<div class="ai-msg bot" style="background: rgba(255,0,0,0.2);">Erro ao gerar resposta.</div>`;
+        messagesContainer.innerHTML += `<div class="ai-msg bot" style="background: rgba(255,0,0,0.2);">Não foi possível obter resposta.</div>`;
       }
     } catch (error) {
       const loadingEl = document.getElementById(loadingId);
@@ -1676,15 +1699,6 @@ const PROJETO_CONTEXTO = "És o assistente virtual do projeto. Responde de forma
       messagesContainer.innerHTML += `<div class="ai-msg bot" style="background: rgba(255,0,0,0.2);">Erro de conexão.</div>`;
     }
 
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  }
-
-  sendBtn.onclick = handleSend;
-  input.onkeypress = (e) => {
-    if (e.key === 'Enter') handleSend();
-  };
-});
-        
 </script>
     
     <!-- Janela Modal (Ecrã de Visualização Detalhada) -->
