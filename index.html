@@ -181,107 +181,123 @@
             100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
         }  
 
-/* ==========================================
-   ANIMAÇÕES E ESTILO DO BOTÃO aquaIA
+        /* ==========================================
+   ESTILO COMPLETO DA JANELA aquaIA
    ========================================== */
 
-/* Botão Flutuante em formato de Pílula Futurista */
-.ai-float-btn {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  background: linear-gradient(135deg, #00d2ff 0%, #0072ff 100%);
-  color: #ffffff;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 8px 20px rgba(0, 114, 255, 0.4);
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
-  animation: floatAqua 3s ease-in-out infinite;
-  z-index: 9999;
-}
-
-/* Efeito Hover (passar o dedo/mouse por cima) */
-.ai-float-btn:hover {
-  transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 12px 30px rgba(0, 210, 255, 0.7);
-}
-
-.ai-float-btn:active {
-  transform: scale(0.95);
-}
-
-/* Animação Flutuante com Pulsação de Luz (Efeito Água) */
-@keyframes floatAqua {
-  0%, 100% {
-    transform: translateY(0);
-    box-shadow: 0 8px 20px rgba(0, 114, 255, 0.4);
-  }
-  50% {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0, 210, 255, 0.7);
-  }
-}
-
-/* ==========================================
-   ANIMAÇÕES DA JANELA DE CHAT E MENSAGENS
-   ========================================== */
-
-/* Transição suave ao abrir e fechar a caixa do chat */
-#ai-box {
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease !important;
-  transform-origin: bottom right;
-}
-        
-/* Estado Fechado */
-#ai-box:not(.open) {
-  opacity: 0;
-  transform: scale(0.7) translateY(30px);
-  pointer-events: none;
-  visibility: hidden;
-  transition: all 0.3s ease;
-}
-
+/* Container Principal da Janela do Chat */
 #ai-box {
   position: fixed !important;
   bottom: 85px !important;
-  right: 25px !important;
-  z-index: 99999 !important; /* Garante que fica à frente de todo o site */
+  right: 20px !important;
+  width: 330px !important;
+  max-width: 90vw !important;
+  height: 450px !important;
+  max-height: 70vh !important;
+  background-color: #0b132b !important; /* Fundo sólido para não ver o site por trás */
+  border: 1px solid rgba(0, 210, 255, 0.3) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 15px rgba(0, 210, 255, 0.2) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  z-index: 99999 !important;
+  transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s !important;
 }
 
-/* Quando a classe .open é ativada pelo clique */
+/* Estado Fechado */
+#ai-box:not(.open) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: scale(0.8) translateY(20px) !important;
+}
+
+/* Estado Aberto ao clicar no botão aquaIA */
 #ai-box.open {
-  display: flex !important;
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
   transform: scale(1) translateY(0) !important;
 }
 
-/* Animação das bolhas de mensagem surgindo suavemente */
+/* Cabeçalho do Chat (Título e Fechar) */
+#ai-box .ai-header, #ai-box header {
+  background: linear-gradient(135deg, #0d1b2a, #1b263b) !important;
+  padding: 12px 16px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  font-weight: bold !important;
+}
+
+/* Área onde ficam as mensagens */
+#ai-messages {
+  flex: 1 !important;
+  padding: 15px !important;
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  background-color: #080e1e !important;
+}
+
+/* Estilo das mensagens */
 .ai-msg {
-  animation: msgPopIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  padding: 10px 14px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  max-width: 85% !important;
+  word-wrap: break-word !important;
 }
 
-@keyframes msgPopIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.ai-msg.user {
+  background: #0072ff !important;
+  color: #ffffff !important;
+  align-self: flex-end !important;
+  border-bottom-right-radius: 2px !important;
 }
 
+.ai-msg.bot {
+  background: #1c2a38 !important;
+  color: #e0e6ed !important;
+  align-self: flex-start !important;
+  border-bottom-left-radius: 2px !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Campo de Digitar e Botão Enviar */
+#ai-box div:last-child {
+  display: flex !important;
+  padding: 10px !important;
+  gap: 8px !important;
+  background: #0d1b2a !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+#ai-input {
+  flex: 1 !important;
+  background: #1b263b !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  color: #ffffff !important;
+  outline: none !important;
+  font-size: 14px !important;
+}
+
+#ai-send-btn {
+  background: #0072ff !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 8px 14px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+}
 
     </style>
 </head>
