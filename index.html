@@ -1641,79 +1641,72 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const PROJETO_CONTEXTO = "És o assistente virtual do projeto 'Monitorização da Qualidade da Água (PQA)'. Responde de forma clara, educada e concisa em português.";
 
-  async function handleSend() {
-    const text = input.value.trim();
-    if (!text) return;
+async function handleSend() {
+  const text = input.value.trim();
+  if (!text) return;
 
-    // 1. Mensagem do Usuário
-    const userMsg = document.createElement('div');
-    userMsg.className = 'ai-msg user';
-    userMsg.textContent = text;
-    messagesContainer.appendChild(userMsg);
+  // 1. Adiciona a mensagem do utilizador
+  const userMsg = document.createElement('div');
+  userMsg.className = 'ai-msg user';
+  userMsg.textContent = text;
+  messagesContainer.appendChild(userMsg);
 
-    input.value = '';
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  input.value = '';
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    // 2. Criar indicador "A pensar..."
-    const loadingMsg = document.createElement('div');
-    loadingMsg.className = 'ai-msg bot';
-    loadingMsg.textContent = 'A pensar...';
-    messagesContainer.appendChild(loadingMsg);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  // 2. Adiciona o indicador "A pensar..."
+  const loadingMsg = document.createElement('div');
+  loadingMsg.className = 'ai-msg bot';
+  loadingMsg.textContent = 'A pensar...';
+  messagesContainer.appendChild(loadingMsg);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    // Cancela automaticamente se a API do Google demorar mais de 10s
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          signal: controller.signal,
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: PROJETO_CONTEXTO }] },
-            contents: [{ parts: [{ text: text }] }]
-          })
-        }
-      );
-
-      clearTimeout(timeoutId);
-      loadingMsg.remove(); // Remove o "A pensar..." com certeza absoluta
-
-      const data = await response.json();
-
-      const botMsg = document.createElement('div');
-      botMsg.className = 'ai-msg bot';
-
-      if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-        botMsg.textContent = data.candidates[0].content.parts[0].text;
-      } else {
-        botMsg.style.background = 'rgba(255,0,0,0.2)';
-        botMsg.textContent = 'O servidor do Google está ocupado no momento. Tente novamente em alguns segundos.';
+  try {
+    // Modelo oficial ativo: gemini-3.8-flash
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: PROJETO_CONTEXTO }] },
+          contents: [{ parts: [{ text: text }] }]
+        })
       }
+    );
 
-      messagesContainer.appendChild(botMsg);
-    } catch (error) {
-      clearTimeout(timeoutId);
-      loadingMsg.remove(); // Remove o "A pensar..." mesmo em caso de erro/timeout
+    const data = await response.json();
+    loadingMsg.remove(); // Remove o "A pensar..."
 
-      const errorMsg = document.createElement('div');
-      errorMsg.className = 'ai-msg bot';
-      errorMsg.style.background = 'rgba(255,0,0,0.2)';
+    const botMsg = document.createElement('div');
+    botMsg.className = 'ai-msg bot';
 
-      if (error.name === 'AbortError') {
-        errorMsg.textContent = 'A conexão demorou muito. Por favor, tente enviar de novo!';
-      } else {
-        errorMsg.textContent = 'Erro de conexão. Verifique sua internet.';
-      }
-
-      messagesContainer.appendChild(errorMsg);
+    // Se o Gemini respondeu com sucesso
+    if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+      botMsg.textContent = data.candidates[0].content.parts[0].text;
+    } 
+    // Se o Google devolveu um erro específico, mostra a mensagem real
+    else if (data.error) {
+      botMsg.style.background = 'rgba(255,0,0,0.2)';
+      botMsg.textContent = `Erro (${data.error.code}): ${data.error.message}`;
+    } 
+    else {
+      botMsg.style.background = 'rgba(255,0,0,0.2)';
+      botMsg.textContent = 'Sem resposta do servidor.';
     }
 
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    messagesContainer.appendChild(botMsg);
+  } catch (error) {
+    loadingMsg.remove();
+    const errorMsg = document.createElement('div');
+    errorMsg.className = 'ai-msg bot';
+    errorMsg.style.background = 'rgba(255,0,0,0.2)';
+    errorMsg.textContent = 'Erro de conexão. Verifique sua internet.';
+    messagesContainer.appendChild(errorMsg);
   }
+
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
 
   // EVENTOS DE ENVIAR (CLIQUE NO BOTÃO E TECLA ENTER)
   sendBtn.onclick = (e) => {
