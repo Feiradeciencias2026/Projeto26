@@ -1606,7 +1606,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('ai-input');
   const messagesContainer = document.getElementById('ai-messages');
 
-  // 1. ABRIR E FECHAR O CHAT
+  // Contexto do projeto para a IA saber o que responder aos visitantes
+  const PROJETO_CONTEXTO = "És o assistente virtual do projeto. Responde de forma clara, educada e concisa em português.";
+
+  // 1. ABRIR E FECHAR A JANELA DO CHAT
   if (toggleBtn && chatBox) {
     toggleBtn.onclick = (e) => {
       e.stopPropagation();
@@ -1621,7 +1624,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // 2. FECHAR AO CLICAR EM QUALQUER LUGAR FORA DA CAIXA
+  // 2. FECHAR AUTOMATICAMENTE AO CLICAR EM QUALQUER LUGAR FORA DO CHAT
   document.addEventListener('click', (e) => {
     if (chatBox && chatBox.classList.contains('open')) {
       const clicouDentroDoChat = chatBox.contains(e.target);
@@ -1635,80 +1638,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!sendBtn || !input || !messagesContainer) return;
 
-  // ⚠️ SUA CHAVE EMBARALHADA DO BASE64:
-  const chaveEmbaralhada = "QVEuQWI4Uk42SXphSUdHVGprZ3JPZlZ6M0ZBODlLNHdNcDc5MEViTmxfLXRFRFNxejdUX3c=";
-  const GEMINI_API_KEY = atob(chaveEmbaralhada.trim());
+  // 3. FUNÇÃO DE ENVIAR MENSAGENS COM POLLINATIONS AI (GRATUITO E ESTÁVEL)
+  async function handleSend() {
+    const text = input.value.trim();
+    if (!text) return;
 
-  const PROJETO_CONTEXTO = "És o assistente virtual do projeto 'Monitorização da Qualidade da Água (PQA)'. Responde de forma clara, educada e concisa em português.";
+    // Mensagem do Utilizador
+    const userMsg = document.createElement('div');
+    userMsg.className = 'ai-msg user';
+    userMsg.textContent = text;
+    messagesContainer.appendChild(userMsg);
 
-async function handleSend() {
-  const text = input.value.trim();
-  if (!text) return;
+    input.value = '';
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-  // 1. Adiciona a mensagem do utilizador
-  const userMsg = document.createElement('div');
-  userMsg.className = 'ai-msg user';
-  userMsg.textContent = text;
-  messagesContainer.appendChild(userMsg);
+    // Indicador "A pensar..."
+    const loadingMsg = document.createElement('div');
+    loadingMsg.className = 'ai-msg bot';
+    loadingMsg.textContent = 'A pensar...';
+    messagesContainer.appendChild(loadingMsg);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-  input.value = '';
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-  // 2. Adiciona o indicador "A pensar..."
-  const loadingMsg = document.createElement('div');
-  loadingMsg.className = 'ai-msg bot';
-  loadingMsg.textContent = 'A pensar...';
-  messagesContainer.appendChild(loadingMsg);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-  try {
-    // Modelo oficial ativo: gemini-3.8-flash
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+    try {
+      // Chamada direta ao Pollinations AI (sem chave de API)
+      const response = await fetch("https://text.pollinations.ai/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          system_instruction: { parts: [{ text: PROJETO_CONTEXTO }] },
-          contents: [{ parts: [{ text: text }] }]
+          messages: [
+            { role: "system", content: PROJETO_CONTEXTO },
+            { role: "user", content: text }
+          ],
+          model: "openai"
         })
+      });
+
+      const replyText = await response.text();
+      loadingMsg.remove(); // Remove o "A pensar..."
+
+      const botMsg = document.createElement('div');
+      botMsg.className = 'ai-msg bot';
+
+      if (replyText && replyText.trim() && !replyText.includes("Error")) {
+        botMsg.textContent = replyText;
+      } else {
+        botMsg.style.background = 'rgba(255,0,0,0.2)';
+        botMsg.textContent = 'O servidor está temporariamente ocupado. Tenta novamente em instantes!';
       }
-    );
 
-    const data = await response.json();
-    loadingMsg.remove(); // Remove o "A pensar..."
-
-    const botMsg = document.createElement('div');
-    botMsg.className = 'ai-msg bot';
-
-    // Se o Gemini respondeu com sucesso
-    if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-      botMsg.textContent = data.candidates[0].content.parts[0].text;
-    } 
-    // Se o Google devolveu um erro específico, mostra a mensagem real
-    else if (data.error) {
-      botMsg.style.background = 'rgba(255,0,0,0.2)';
-      botMsg.textContent = `Erro (${data.error.code}): ${data.error.message}`;
-    } 
-    else {
-      botMsg.style.background = 'rgba(255,0,0,0.2)';
-      botMsg.textContent = 'Sem resposta do servidor.';
+      messagesContainer.appendChild(botMsg);
+    } catch (error) {
+      loadingMsg.remove();
+      const errorMsg = document.createElement('div');
+      errorMsg.className = 'ai-msg bot';
+      errorMsg.style.background = 'rgba(255,0,0,0.2)';
+      errorMsg.textContent = 'Erro de ligação. Verifica a tua internet.';
+      messagesContainer.appendChild(errorMsg);
     }
 
-    messagesContainer.appendChild(botMsg);
-  } catch (error) {
-    loadingMsg.remove();
-    const errorMsg = document.createElement('div');
-    errorMsg.className = 'ai-msg bot';
-    errorMsg.style.background = 'rgba(255,0,0,0.2)';
-    errorMsg.textContent = 'Erro de conexão. Verifique sua internet.';
-    messagesContainer.appendChild(errorMsg);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-  // EVENTOS DE ENVIAR (CLIQUE NO BOTÃO E TECLA ENTER)
+  // 4. EVENTOS DE ENVIAR (CLIQUE NO BOTÃO E TECLA ENTER)
   sendBtn.onclick = (e) => {
     e.stopPropagation();
     handleSend();
