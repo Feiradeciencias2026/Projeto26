@@ -1638,12 +1638,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!sendBtn || !input || !messagesContainer) return;
 
-  // 3. FUNÇÃO DE ENVIAR MENSAGENS COM POLLINATIONS AI (GRATUITO E ESTÁVEL)
   async function handleSend() {
     const text = input.value.trim();
     if (!text) return;
 
-    // Mensagem do Utilizador
+    // 1. Mensagem do Usuário
     const userMsg = document.createElement('div');
     userMsg.className = 'ai-msg user';
     userMsg.textContent = text;
@@ -1652,7 +1651,7 @@ document.addEventListener('DOMContentLoaded', () => {
     input.value = '';
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    // Indicador "A pensar..."
+    // 2. Indicador "A pensar..."
     const loadingMsg = document.createElement('div');
     loadingMsg.className = 'ai-msg bot';
     loadingMsg.textContent = 'A pensar...';
@@ -1660,30 +1659,25 @@ document.addEventListener('DOMContentLoaded', () => {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
     try {
-      // Chamada direta ao Pollinations AI (sem chave de API)
-      const response = await fetch("https://text.pollinations.ai/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [
-            { role: "system", content: PROJETO_CONTEXTO },
-            { role: "user", content: text }
-          ],
-          model: "openai"
-        })
-      });
+      // Requisição GET ultra leve via URL (Evita o erro de disco cheio do servidor)
+      const promptEncoded = encodeURIComponent(text);
+      const systemEncoded = encodeURIComponent(PROJETO_CONTEXTO);
+      const url = `https://text.pollinations.ai/${promptEncoded}?system=${systemEncoded}&model=openai`;
 
+      const response = await fetch(url);
       const replyText = await response.text();
-      loadingMsg.remove(); // Remove o "A pensar..."
+      
+      loadingMsg.remove();
 
       const botMsg = document.createElement('div');
       botMsg.className = 'ai-msg bot';
 
-      if (replyText && replyText.trim() && !replyText.includes("Error")) {
+      // Filtra para garantir que não exibe código de erro bruto na tela
+      if (response.ok && replyText && !replyText.includes('"error":') && !replyText.includes("ENOSPC")) {
         botMsg.textContent = replyText;
       } else {
         botMsg.style.background = 'rgba(255,0,0,0.2)';
-        botMsg.textContent = 'O servidor está temporariamente ocupado. Tenta novamente em instantes!';
+        botMsg.textContent = 'O servidor está instável no momento. Por favor, tente novamente em alguns instantes.';
       }
 
       messagesContainer.appendChild(botMsg);
@@ -1692,7 +1686,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const errorMsg = document.createElement('div');
       errorMsg.className = 'ai-msg bot';
       errorMsg.style.background = 'rgba(255,0,0,0.2)';
-      errorMsg.textContent = 'Erro de ligação. Verifica a tua internet.';
+      errorMsg.textContent = 'Erro de conexão. Verifique sua internet.';
       messagesContainer.appendChild(errorMsg);
     }
 
