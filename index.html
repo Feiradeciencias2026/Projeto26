@@ -334,6 +334,37 @@
   font-weight: 600 !important;
 }
 
+
+/* Contêiner de Categorias do Modo Offline */
+.ai-cat-container {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin-top: 10px !important;
+}
+
+/* Botões de Categoria */
+.ai-cat-btn {
+  background: rgba(0, 210, 255, 0.15) !important;
+  border: 1px solid rgba(0, 210, 255, 0.4) !important;
+  color: #00d2ff !important;
+  padding: 8px 14px !important;
+  border-radius: 20px !important;
+  font-size: 13px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.ai-cat-btn:hover, .ai-cat-btn:active {
+  background: #0072ff !important;
+  color: #ffffff !important;
+  border-color: #0072ff !important;
+  transform: translateY(-2px) !important;
+}
+
     </style>
 </head>
 <body class="bg-blue-50 text-gray-700 font-sans antialiased overflow-x-hidden text-[13px]">
@@ -1606,10 +1637,64 @@ document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('ai-input');
   const messagesContainer = document.getElementById('ai-messages');
 
-  // Contexto do projeto para a IA saber o que responder aos visitantes
-  const PROJETO_CONTEXTO = "És o assistente virtual do projeto. Responde de forma clara, educada e concisa em português.";
+  const PROJETO_CONTEXTO = "És o assistente aquaIA do projeto 'Monitorização da Qualidade da Água (PQA)' para a Feira de Ciências 2026. O projeto usa Arduino Nano e sensores para poços rurais. Responde de forma curta, clara e educada em português.";
 
-  // 1. ABRIR E FECHAR A JANELA DO CHAT
+  // Respostas detalhadas para cada categoria no modo offline
+  const RESPOSTAS_CATEGORIAS = {
+    'arduino': "🤖 <strong>Arduino Nano & Sensores:</strong><br>Utilizamos o microcontrolador **Arduino Nano** ligado a sensores de **pH** e **turbidez**. O sistema faz a leitura em tempo real para verificar se a água está própria para consumo humano de forma rápida e económica.",
+    'pqa': "💧 <strong>Sobre o Projeto PQA:</strong><br>O **PQA (Monitorização da Qualidade da Água)** é um dispositivo eletrónico portátil desenvolvido para comunidades e poços rurais de Sátiro Dias, garantindo uma análise hídrica acessível.",
+    'ods': "🌍 <strong>ODS 6 (ONU):</strong><br>O projeto contribui diretamente para o **Objetivo de Desenvolvimento Sustentável 6 da ONU**, promovendo o acesso à água potável, limpa e ao saneamento para todos.",
+    'equipe': "👥 <strong>Equipa & Orientação:</strong><br>Desenvolvido pelos estudantes do **CETIPES** com a orientação da professora **Ivone Santos** para a Feira de Ciências 2026."
+  };
+
+  // Função para exibir o menu de categorias interativo
+  function exibirMenuCategorias(avisoTexto) {
+    const botMsg = document.createElement('div');
+    botMsg.className = 'ai-msg bot';
+    
+    botMsg.innerHTML = `
+      <p style="margin-bottom: 8px;">${avisoTexto}</p>
+      <div class="ai-cat-container">
+        <button class="ai-cat-btn" data-cat="arduino">🤖 Arduino & Sensores</button>
+        <button class="ai-cat-btn" data-cat="pqa">💧 Projeto PQA</button>
+        <button class="ai-cat-btn" data-cat="ods">🌍 ODS 6 (ONU)</button>
+        <button class="ai-cat-btn" data-cat="equipe">👥 Equipa do Projeto</button>
+      </div>
+    `;
+    
+    messagesContainer.appendChild(botMsg);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Detecta cliques nos botões de categoria dentro do chat
+  messagesContainer.addEventListener('click', (e) => {
+    const btn = e.target.closest('.ai-cat-btn');
+    if (!btn) return;
+
+    const catKey = btn.getAttribute('data-cat');
+    if (RESPOSTAS_CATEGORIAS[catKey]) {
+      // Adiciona a escolha do usuário
+      const userMsg = document.createElement('div');
+      userMsg.className = 'ai-msg user';
+      userMsg.textContent = btn.textContent;
+      messagesContainer.appendChild(userMsg);
+
+      // Responde com o conteúdo da categoria escolhida
+      const botMsg = document.createElement('div');
+      botMsg.className = 'ai-msg bot';
+      botMsg.innerHTML = RESPOSTAS_CATEGORIAS[catKey].replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      messagesContainer.appendChild(botMsg);
+
+      // Exibe novamente as opções para poder continuar navegando
+      setTimeout(() => {
+        exibirMenuCategorias("Escolha outro tema para explorar:");
+      }, 600);
+
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  });
+
+  // Controls da Janela
   if (toggleBtn && chatBox) {
     toggleBtn.onclick = (e) => {
       e.stopPropagation();
@@ -1624,13 +1709,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // 2. FECHAR AUTOMATICAMENTE AO CLICAR EM QUALQUER LUGAR FORA DO CHAT
   document.addEventListener('click', (e) => {
     if (chatBox && chatBox.classList.contains('open')) {
-      const clicouDentroDoChat = chatBox.contains(e.target);
-      const clicouNoBotao = toggleBtn && toggleBtn.contains(e.target);
-
-      if (!clicouDentroDoChat && !clicouNoBotao) {
+      if (!chatBox.contains(e.target) && !toggleBtn.contains(e.target)) {
         chatBox.classList.remove('open');
       }
     }
@@ -1638,11 +1719,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!sendBtn || !input || !messagesContainer) return;
 
+  // Lógica de Envio (Online ou Fallback para o Menu)
   async function handleSend() {
     const text = input.value.trim();
     if (!text) return;
 
-    // 1. Mensagem do Usuário
     const userMsg = document.createElement('div');
     userMsg.className = 'ai-msg user';
     userMsg.textContent = text;
@@ -1651,49 +1732,50 @@ document.addEventListener('DOMContentLoaded', () => {
     input.value = '';
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    // 2. Indicador "A pensar..."
     const loadingMsg = document.createElement('div');
     loadingMsg.className = 'ai-msg bot';
     loadingMsg.textContent = 'A pensar...';
     messagesContainer.appendChild(loadingMsg);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
+    let respostaObtida = null;
+
     try {
-      // Requisição GET ultra leve via URL (Evita o erro de disco cheio do servidor)
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 3500);
+
       const promptEncoded = encodeURIComponent(text);
       const systemEncoded = encodeURIComponent(PROJETO_CONTEXTO);
       const url = `https://text.pollinations.ai/${promptEncoded}?system=${systemEncoded}&model=openai`;
 
-      const response = await fetch(url);
-      const replyText = await response.text();
-      
-      loadingMsg.remove();
+      const response = await fetch(url, { signal: controller.signal });
+      clearTimeout(timer);
 
-      const botMsg = document.createElement('div');
-      botMsg.className = 'ai-msg bot';
-
-      // Filtra para garantir que não exibe código de erro bruto na tela
-      if (response.ok && replyText && !replyText.includes('"error":') && !replyText.includes("ENOSPC")) {
-        botMsg.textContent = replyText;
-      } else {
-        botMsg.style.background = 'rgba(255,0,0,0.2)';
-        botMsg.textContent = 'O servidor está instável no momento. Por favor, tente novamente em alguns instantes.';
+      if (response.ok) {
+        const replyText = await response.text();
+        if (replyText && !replyText.includes("error") && !replyText.includes("ENOSPC") && replyText.trim().length > 0) {
+          respostaObtida = replyText;
+        }
       }
-
-      messagesContainer.appendChild(botMsg);
-    } catch (error) {
-      loadingMsg.remove();
-      const errorMsg = document.createElement('div');
-      errorMsg.className = 'ai-msg bot';
-      errorMsg.style.background = 'rgba(255,0,0,0.2)';
-      errorMsg.textContent = 'Erro de conexão. Verifique sua internet.';
-      messagesContainer.appendChild(errorMsg);
+    } catch (err) {
+      console.warn("API offline. Redirecionando para o menu de categorias.");
     }
 
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    loadingMsg.remove();
+
+    if (respostaObtida) {
+      // Se a IA online respondeu com sucesso
+      const botMsg = document.createElement('div');
+      botMsg.className = 'ai-msg bot';
+      botMsg.innerHTML = respostaObtida.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      messagesContainer.appendChild(botMsg);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    } else {
+      // Se a IA online falhou: Mostra o Aviso + Botões de Categorias!
+      exibirMenuCategorias("⚠️ <strong>Servidor em manutenção!</strong><br>Ativámos o <strong>Modo Offline Interativo</strong>. Selecione um dos temas abaixo para explorar o projeto:");
+    }
   }
 
-  // 4. EVENTOS DE ENVIAR (CLIQUE NO BOTÃO E TECLA ENTER)
   sendBtn.onclick = (e) => {
     e.stopPropagation();
     handleSend();
@@ -1706,9 +1788,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 });
+    </script>
 
-</script>
-    
     <!-- Janela Modal (Ecrã de Visualização Detalhada) -->
     <div id="galeriaModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-6 transition-opacity duration-300">
         </div>
