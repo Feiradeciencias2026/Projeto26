@@ -334,35 +334,57 @@
   font-weight: 600 !important;
 }
 
-
-/* Contêiner de Categorias do Modo Offline */
+        /* Contêiner de Categorias (Grade 2x2 Ultra Compacta para Telemóvel) */
 .ai-cat-container {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 8px !important;
-  margin-top: 10px !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 4px !important;
+  margin-top: 6px !important;
+  width: 100% !important;
 }
 
-/* Botões de Categoria */
+/* Botões de Categoria Pequenos e Proporcionais */
 .ai-cat-btn {
-  background: rgba(0, 210, 255, 0.15) !important;
-  border: 1px solid rgba(0, 210, 255, 0.4) !important;
+  background: rgba(0, 210, 255, 0.08) !important;
+  border: 1px solid rgba(0, 210, 255, 0.3) !important;
   color: #00d2ff !important;
-  padding: 8px 14px !important;
-  border-radius: 20px !important;
-  font-size: 13px !important;
-  font-weight: bold !important;
+  padding: 4px 6px !important; /* Tamanho bem reduzido */
+  border-radius: 6px !important;
+  font-size: 10px !important;  /* Fonte bem pequena e discreta */
+  font-weight: 600 !important;
   cursor: pointer !important;
   transition: all 0.2s ease !important;
-  display: inline-flex !important;
+  display: flex !important;
   align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  line-height: 1.1 !important;
+  box-sizing: border-box !important;
 }
 
 .ai-cat-btn:hover, .ai-cat-btn:active {
   background: #0072ff !important;
   color: #ffffff !important;
   border-color: #0072ff !important;
-  transform: translateY(-2px) !important;
+}
+
+/* Botão "Quero saber mais" (Mínimo e elegante) */
+.ai-more-btn {
+  display: inline-block !important;
+  margin-top: 6px !important;
+  padding: 2px 8px !important;
+  font-size: 10px !important;
+  color: #00d2ff !important;
+  background: transparent !important;
+  border: 1px dashed rgba(0, 210, 255, 0.4) !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.ai-more-btn:hover, .ai-more-btn:active {
+  background: rgba(0, 210, 255, 0.15) !important;
+  border-color: #00d2ff !important;
 }
 
     </style>
@@ -1637,28 +1659,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('ai-input');
   const messagesContainer = document.getElementById('ai-messages');
 
-  const PROJETO_CONTEXTO = "És o assistente aquaIA do projeto 'Monitorização da Qualidade da Água (PQA)' para a Feira de Ciências 2026. O projeto usa Arduino Nano e sensores para poços rurais. Responde de forma curta, clara e educada em português.";
+  const PROJETO_CONTEXTO = "És o assistente aquaIA do projeto. Responde de forma curta, clara e educada em português.";
 
-  // Respostas detalhadas para cada categoria no modo offline
   const RESPOSTAS_CATEGORIAS = {
-    'arduino': "🤖 <strong>Arduino Nano & Sensores:</strong><br>Utilizamos o microcontrolador **Arduino Nano** ligado a sensores de **pH** e **turbidez**. O sistema faz a leitura em tempo real para verificar se a água está própria para consumo humano de forma rápida e económica.",
-    'pqa': "💧 <strong>Sobre o Projeto PQA:</strong><br>O **PQA (Monitorização da Qualidade da Água)** é um dispositivo eletrónico portátil desenvolvido para comunidades e poços rurais de Sátiro Dias, garantindo uma análise hídrica acessível.",
-    'ods': "🌍 <strong>ODS 6 (ONU):</strong><br>O projeto contribui diretamente para o **Objetivo de Desenvolvimento Sustentável 6 da ONU**, promovendo o acesso à água potável, limpa e ao saneamento para todos.",
-    'equipe': "👥 <strong>Equipa & Orientação:</strong><br>Desenvolvido pelos estudantes do **CETIPES** com a orientação da professora **Ivone Santos** para a Feira de Ciências 2026."
+    'arduino': "🤖 <strong>Arduino Nano & Sensores:</strong><br>Utilizamos o **Arduino Nano** ligado a sensores de **pH** e **turbidez** para fazer a leitura rápida e precisa da água.",
+    'pqa': "💧 <strong>Sobre o Projeto PQA:</strong><br>O **PQA** é um sistema portátil de baixo custo desenvolvido para testar a água em poços e comunidades rurais de Sátiro Dias.",
+    'ods': "🌍 <strong>ODS 6 (ONU):</strong><br>O projeto apoia o **Objetivo 6 da ONU**, promovendo água potável, limpa e saneamento para todos.",
+    'equipe': "👥 <strong>Equipa do Projeto:</strong><br>Desenvolvido por alunos do **CETIPES** com orientação da professora **Ivone Santos** para a Feira 2026."
   };
 
-  // Função para exibir o menu de categorias interativo
+  // Função para exibir o menu de categorias reduzido
   function exibirMenuCategorias(avisoTexto) {
     const botMsg = document.createElement('div');
     botMsg.className = 'ai-msg bot';
     
     botMsg.innerHTML = `
-      <p style="margin-bottom: 8px;">${avisoTexto}</p>
+      <p style="margin-bottom: 6px; font-size: 12px;">${avisoTexto}</p>
       <div class="ai-cat-container">
-        <button class="ai-cat-btn" data-cat="arduino">🤖 Arduino & Sensores</button>
+        <button class="ai-cat-btn" data-cat="arduino">🤖 Arduino/Sensores</button>
         <button class="ai-cat-btn" data-cat="pqa">💧 Projeto PQA</button>
         <button class="ai-cat-btn" data-cat="ods">🌍 ODS 6 (ONU)</button>
-        <button class="ai-cat-btn" data-cat="equipe">👥 Equipa do Projeto</button>
+        <button class="ai-cat-btn" data-cat="equipe">👥 Equipa/Professora</button>
       </div>
     `;
     
@@ -1666,31 +1687,38 @@ document.addEventListener('DOMContentLoaded', () => {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
-  // Detecta cliques nos botões de categoria dentro do chat
+  // Detecta cliques nos botões de categoria e no "Quero saber mais"
   messagesContainer.addEventListener('click', (e) => {
-    const btn = e.target.closest('.ai-cat-btn');
-    if (!btn) return;
+    // Clique em uma Categoria
+    const btnCat = e.target.closest('.ai-cat-btn');
+    if (btnCat) {
+      const catKey = btnCat.getAttribute('data-cat');
+      if (RESPOSTAS_CATEGORIAS[catKey]) {
+        // Mensagem do usuário
+        const userMsg = document.createElement('div');
+        userMsg.className = 'ai-msg user';
+        userMsg.textContent = btnCat.textContent;
+        messagesContainer.appendChild(userMsg);
 
-    const catKey = btn.getAttribute('data-cat');
-    if (RESPOSTAS_CATEGORIAS[catKey]) {
-      // Adiciona a escolha do usuário
-      const userMsg = document.createElement('div');
-      userMsg.className = 'ai-msg user';
-      userMsg.textContent = btn.textContent;
-      messagesContainer.appendChild(userMsg);
+        // Resposta da Categoria com o botão discreto "Quero saber mais"
+        const botMsg = document.createElement('div');
+        botMsg.className = 'ai-msg bot';
+        botMsg.innerHTML = `
+          ${RESPOSTAS_CATEGORIAS[catKey].replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
+          <br>
+          <button class="ai-more-btn">➕ Quero saber mais</button>
+        `;
+        messagesContainer.appendChild(botMsg);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+      return;
+    }
 
-      // Responde com o conteúdo da categoria escolhida
-      const botMsg = document.createElement('div');
-      botMsg.className = 'ai-msg bot';
-      botMsg.innerHTML = RESPOSTAS_CATEGORIAS[catKey].replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      messagesContainer.appendChild(botMsg);
-
-      // Exibe novamente as opções para poder continuar navegando
-      setTimeout(() => {
-        exibirMenuCategorias("Escolha outro tema para explorar:");
-      }, 600);
-
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    // Clique no botão "Quero saber mais"
+    const btnMore = e.target.closest('.ai-more-btn');
+    if (btnMore) {
+      btnMore.remove(); // Esconde o botão após o clique
+      exibirMenuCategorias("Selecione outro tema:");
     }
   });
 
@@ -1719,7 +1747,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!sendBtn || !input || !messagesContainer) return;
 
-  // Lógica de Envio (Online ou Fallback para o Menu)
+  // Envio de Mensagem (Online -> Fallback para Categorias)
   async function handleSend() {
     const text = input.value.trim();
     if (!text) return;
@@ -1758,21 +1786,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     } catch (err) {
-      console.warn("API offline. Redirecionando para o menu de categorias.");
+      console.warn("Servidor indisponível. Ativando modo offline.");
     }
 
     loadingMsg.remove();
 
     if (respostaObtida) {
-      // Se a IA online respondeu com sucesso
       const botMsg = document.createElement('div');
       botMsg.className = 'ai-msg bot';
       botMsg.innerHTML = respostaObtida.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       messagesContainer.appendChild(botMsg);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     } else {
-      // Se a IA online falhou: Mostra o Aviso + Botões de Categorias!
-      exibirMenuCategorias("⚠️ <strong>Servidor em manutenção!</strong><br>Ativámos o <strong>Modo Offline Interativo</strong>. Selecione um dos temas abaixo para explorar o projeto:");
+      // Exibe aviso + menu de categorias compacto
+      exibirMenuCategorias("⚠️ <strong>Modo Offline Ativo!</strong><br>Selecione um tema abaixo:");
     }
   }
 
@@ -1788,7 +1815,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 });
-    </script>
+</script>
 
     <!-- Janela Modal (Ecrã de Visualização Detalhada) -->
     <div id="galeriaModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-6 transition-opacity duration-300">
